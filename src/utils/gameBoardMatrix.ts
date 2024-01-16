@@ -1,9 +1,12 @@
-export default function createMatrix(x: number, y: number) {
-  return Array(x * y)
-    .fill(false, 0, x * y)
+export default function createMatrix(
+  width: number,
+  height: number
+): boolean[][] {
+  return Array(width * height)
+    .fill(false, 0, width * height)
     .reduce(
-      (acc, button, index) => {
-        if (index % x === 0 && index) {
+      (acc, el, idx) => {
+        if (idx % width === 0 && idx) {
           acc.currentRow += 1;
         }
 
@@ -11,7 +14,7 @@ export default function createMatrix(x: number, y: number) {
           acc.matrix[acc.currentRow] = [];
         }
 
-        acc.matrix[acc.currentRow].push(button);
+        acc.matrix[acc.currentRow].push(el);
 
         return acc;
       },
