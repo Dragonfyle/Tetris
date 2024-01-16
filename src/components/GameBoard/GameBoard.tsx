@@ -32,6 +32,12 @@ export default function GameBoard() {
     return () => clearInterval(fallingInterval);
   }, []);
 
+  useKeyboardControls(
+    BOARD_DIMENSIONS.WIDTH,
+    BOARD_DIMENSIONS.HEIGHT,
+    setBlockPosition
+  );
+
   function createReadyToRender() {
     const readyToRender = JSON.parse(JSON.stringify(boardMatrix));
     readyToRender[blockPosition.y][blockPosition.x] = true;
