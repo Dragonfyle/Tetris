@@ -15,12 +15,12 @@ export const Board = styled.div`
   grid-gap: 2.4px;
   min-width: 350px;
   height: 700px;
-  background-color: #622;
+  background-color: #222;
 `;
 
-export const Square = styled.div`
+export const Square = styled.div<{ $filled: boolean }>`
   width: 100%;
   height: 100%;
-  background-color: #a42;
+  background-color: ${({ $filled }) => ($filled ? "#a42" : "#666")};
   border-radius: 1px;
 `;
