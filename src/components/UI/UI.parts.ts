@@ -11,6 +11,8 @@ export const Wrapper = styled.div<{ $justify: string }>`
 `;
 
 export const StatsColumn = styled.section`
+  display: flex;
+  justify-content: center;
   width: 150px;
   height: 85%;
   background-color: #444;
