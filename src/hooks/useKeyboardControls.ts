@@ -1,11 +1,19 @@
-import { BOARD_DIMENSIONS } from "../config/board";
 import { useCallback, useEffect, useState } from "react";
 import { BlockPositionProps } from "../components/GameBoard/GameBoard";
 
-export default function useKeyboardControls(
-  onKeyDown: React.Dispatch<React.SetStateAction<BlockPositionProps>>,
-  setFallingInterval: React.Dispatch<React.SetStateAction<number>>
-) {
+interface KeyboardControsProps {
+  onKeyDown: React.Dispatch<React.SetStateAction<BlockPositionProps>>;
+  setFallInterval: React.Dispatch<React.SetStateAction<number>>;
+  isBlockedLeft: boolean;
+  isBlockedRight: boolean;
+}
+
+export default function useKeyboardControls({
+  onKeyDown,
+  setFallInterval,
+  isBlockedLeft,
+  isBlockedRight,
+}: KeyboardControsProps) {
   const [isDown, setIsDown] = useState(false);
 
   const keyboardListener = useCallback(
@@ -19,26 +27,34 @@ export default function useKeyboardControls(
       const isKeySupported = Object.keys(supportedKeys).includes(e.key);
 
       function handleLeft() {
-        onKeyDown((prev) => ({ ...prev, x: Math.max(0, prev.x - 1) }));
+        if (isBlockedLeft) return;
+
+        if (e.type === "keydown") {
+          onKeyDown((prev) => ({ ...prev, x: prev.x - 1 }));
+        }
       }
 
       function handleRight() {
-        onKeyDown((prev) => ({
-          ...prev,
-          x: Math.min(BOARD_DIMENSIONS.WIDTH - 1, prev.x + 1),
-        }));
+        if (isBlockedRight) return;
+
+        if (e.type === "keydown") {
+          onKeyDown((prev) => ({
+            ...prev,
+            x: prev.x + 1,
+          }));
+        }
       }
 
-      function handleDown(e: KeyboardEvent) {
+      function handleDown() {
         if (e.type === "keydown") {
           if (!isDown) {
             setIsDown(true);
-            setFallingInterval((prev) => prev / 10);
+            setFallInterval((prev) => prev / 10);
           }
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setFallingInterval(1000);
+          setFallInterval(1000);
         }
       }
 
@@ -55,11 +71,11 @@ export default function useKeyboardControls(
           handleRight();
           break;
         case supportedKeys.ARROW_DOWN:
-          handleDown(e);
+          handleDown();
           break;
       }
     },
-    [onKeyDown, setFallingInterval, isDown]
+    [onKeyDown, setFallInterval, isDown, isBlockedLeft, isBlockedRight]
   );
 
   useEffect(() => {

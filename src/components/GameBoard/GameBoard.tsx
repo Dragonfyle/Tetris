@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
-import { BOARD_DIMENSIONS } from "../../config/board";
+import { BOARD_DIMENSIONS, BOARD_EDGE } from "../../config/board";
 import { INITIAL_INTERVAL } from "../../config/initialSettings";
 import createMatrix from "../../utils/gameBoardMatrix";
 import useKeyboardControls from "../../hooks/useKeyboardControls";
@@ -19,30 +19,33 @@ export default function GameBoard() {
     x: 5,
     y: 0,
   });
-  const [fallingInterval, setFallingInterval] = useState(INITIAL_INTERVAL);
+  const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
 
-  function solidifyBlock() {
-    setStaticBlocksMatrix((prev) => {
-      const newMatrix = JSON.parse(JSON.stringify(prev));
-      newMatrix[blockPosition.y][blockPosition.x] = true;
-      return newMatrix;
-    });
-  }
-
-  const isBlockedUnder =
-    blockPosition.y === BOARD_DIMENSIONS.HEIGHT - 1 ||
-    staticBlocksMatrix[blockPosition.y + 1][blockPosition.x];
+  const isSquareOccupied = {
+    left: staticBlocksMatrix[blockPosition.y]?.[blockPosition.x - 1],
+    right: staticBlocksMatrix[blockPosition.y]?.[blockPosition.x + 1],
+    down: staticBlocksMatrix[blockPosition.y + 1]?.[blockPosition.x],
+  };
+  const isBlocked = {
+    under: blockPosition.y === BOARD_EDGE.BOTTOM || isSquareOccupied.down,
+    left: blockPosition.x === BOARD_EDGE.LEFT || isSquareOccupied.left,
+    right: blockPosition.x === BOARD_EDGE.RIGHT || isSquareOccupied.right,
+  };
 
   useFallingBlock({
     blockPosition,
     setBlockPosition,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
-    isBlockedUnder,
-    solidifyBlock,
-    fallingInterval,
+    isBlockedUnder: isBlocked.under,
+    fallInterval,
   });
-  useKeyboardControls(setBlockPosition, setFallingInterval);
+  useKeyboardControls({
+    onKeyDown: setBlockPosition,
+    setFallInterval,
+    isBlockedLeft: isBlocked.left,
+    isBlockedRight: isBlocked.right,
+  });
 
   function createReadyToRender() {
     const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));

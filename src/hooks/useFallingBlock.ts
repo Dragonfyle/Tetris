@@ -1,16 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { solidifyBlock } from "../utils/solidifyBlock";
+import { blockCoords } from "../utils/globalTypes";
 
-interface useFallingBlockProps {
-  blockPosition: { x: number; y: number };
+interface FallingBlockProps {
+  blockPosition: blockCoords;
   setBlockPosition: React.Dispatch<
     React.SetStateAction<{ x: number; y: number }>
   >;
   isBlockedUnder: boolean;
-  solidifyBlock: () => void;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
-  fallingInterval: number;
+  fallInterval: number;
 }
+
+const MIN_INTERVAL = 0;
 
 export default function useFallingBlock({
   blockPosition,
@@ -18,38 +21,43 @@ export default function useFallingBlock({
   staticBlocksMatrix,
   setStaticBlocksMatrix,
   isBlockedUnder,
-  solidifyBlock,
-  fallingInterval,
-}: useFallingBlockProps) {
+  fallInterval,
+}: FallingBlockProps) {
+  const passedTime = useRef(0);
+  const lastIntervalTimeStamp = useRef(0);
+  passedTime.current = Date.now() - lastIntervalTimeStamp.current;
+
   useEffect(() => {
     function createNewBlock() {
       setBlockPosition({ x: 3, y: 0 });
     }
 
     const fall = setInterval(() => {
+      lastIntervalTimeStamp.current = Date.now();
+
       if (!staticBlocksMatrix || typeof setStaticBlocksMatrix !== "function") {
         return;
       }
       if (isBlockedUnder) {
-        solidifyBlock();
+        solidifyBlock(setStaticBlocksMatrix, blockPosition);
         createNewBlock();
       } else {
         setBlockPosition((prevPos) => {
           return { ...prevPos, y: prevPos.y + 1 };
         });
       }
-    }, fallingInterval);
+    }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
 
-    return () => clearInterval(fall);
+    return () => {
+      clearInterval(fall);
+    };
   }, [
     setBlockPosition,
-    // solidifyBlock,
     isBlockedUnder,
-    // blockPosition,
-    // blockPosition.x,
+    blockPosition,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
-    fallingInterval,
+    fallInterval,
   ]);
 
   return [blockPosition, setBlockPosition] as const;
