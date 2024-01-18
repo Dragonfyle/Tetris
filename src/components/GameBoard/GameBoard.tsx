@@ -5,6 +5,7 @@ import { INITIAL_INTERVAL } from "../../config/initialSettings";
 import createMatrix from "../../utils/gameBoardMatrix";
 import useKeyboardControls from "../../hooks/useKeyboardControls";
 import useFallingBlock from "../../hooks/useFallingBlock";
+import { blockCoords } from "../../utils/globalTypes";
 
 export interface BlockPositionProps {
   x: number;
@@ -38,6 +39,7 @@ export default function GameBoard() {
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     isBlockedUnder: isBlocked.under,
+    // rearrangeRows,
     fallInterval,
   });
   useKeyboardControls({
@@ -47,7 +49,10 @@ export default function GameBoard() {
     isBlockedRight: isBlocked.right,
   });
 
-  function createReadyToRender() {
+  function createReadyToRender(
+    staticBlocksMatrix: boolean[][],
+    blockPosition: blockCoords
+  ) {
     const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));
     readyToRender[blockPosition.y][blockPosition.x] = true;
 
@@ -56,7 +61,10 @@ export default function GameBoard() {
 
   function renderSquares() {
     const componentArray = [];
-    const readyToRender = createReadyToRender();
+    const readyToRender = createReadyToRender(
+      staticBlocksMatrix,
+      blockPosition
+    );
 
     for (let i = 0; i < 200; i++) {
       componentArray.push(

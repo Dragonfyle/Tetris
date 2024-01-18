@@ -49,7 +49,7 @@ export default function useKeyboardControls({
         if (e.type === "keydown") {
           if (!isDown) {
             setIsDown(true);
-            setFallInterval((prev) => prev / 10);
+            setFallInterval((prev) => prev / 20);
           }
         }
         if (e.type === "keyup") {

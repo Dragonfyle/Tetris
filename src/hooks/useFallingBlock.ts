@@ -7,9 +7,10 @@ interface FallingBlockProps {
   setBlockPosition: React.Dispatch<
     React.SetStateAction<{ x: number; y: number }>
   >;
-  isBlockedUnder: boolean;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
+  isBlockedUnder: boolean;
+  // rearrangeRows: () => void;
   fallInterval: number;
 }
 
@@ -21,6 +22,7 @@ export default function useFallingBlock({
   staticBlocksMatrix,
   setStaticBlocksMatrix,
   isBlockedUnder,
+  // rearrangeRows,
   fallInterval,
 }: FallingBlockProps) {
   const passedTime = useRef(0);
@@ -40,6 +42,7 @@ export default function useFallingBlock({
       }
       if (isBlockedUnder) {
         solidifyBlock(setStaticBlocksMatrix, blockPosition);
+        // rearrangeRows();
         createNewBlock();
       } else {
         setBlockPosition((prevPos) => {
@@ -52,11 +55,12 @@ export default function useFallingBlock({
       clearInterval(fall);
     };
   }, [
-    setBlockPosition,
-    isBlockedUnder,
     blockPosition,
+    setBlockPosition,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
+    isBlockedUnder,
+    // rearrangeRows,
     fallInterval,
   ]);
 
