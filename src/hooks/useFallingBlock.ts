@@ -1,16 +1,15 @@
 import { useEffect, useRef } from "react";
-import { solidifyBlock } from "../utils/solidifyBlock";
-import { blockCoords } from "../utils/globalTypes";
+import { handleBlockSettle } from "../utils/handleBlockSettle";
+import { BlockCoords } from "../utils/globalTypes";
 
 interface FallingBlockProps {
-  blockPosition: blockCoords;
+  blockPosition: BlockCoords;
   setBlockPosition: React.Dispatch<
     React.SetStateAction<{ x: number; y: number }>
   >;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
   isBlockedUnder: boolean;
-  // rearrangeRows: () => void;
   fallInterval: number;
 }
 
@@ -22,7 +21,6 @@ export default function useFallingBlock({
   staticBlocksMatrix,
   setStaticBlocksMatrix,
   isBlockedUnder,
-  // rearrangeRows,
   fallInterval,
 }: FallingBlockProps) {
   const passedTime = useRef(0);
@@ -41,11 +39,11 @@ export default function useFallingBlock({
         return;
       }
       if (isBlockedUnder) {
-        solidifyBlock(setStaticBlocksMatrix, blockPosition);
-        // rearrangeRows();
+        handleBlockSettle(setStaticBlocksMatrix, blockPosition);
         createNewBlock();
       } else {
         setBlockPosition((prevPos) => {
+          //todo moveBlockFn
           return { ...prevPos, y: prevPos.y + 1 };
         });
       }
@@ -60,7 +58,6 @@ export default function useFallingBlock({
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     isBlockedUnder,
-    // rearrangeRows,
     fallInterval,
   ]);
 

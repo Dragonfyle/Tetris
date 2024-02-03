@@ -1,7 +1,6 @@
-export default function createMatrix(
-  width: number,
-  height: number
-): boolean[][] {
+export type GameBoardMatrix = boolean[][];
+
+export function createMatrix(width: number, height: number): GameBoardMatrix {
   return Array(width * height)
     .fill(false, 0, width * height)
     .reduce(

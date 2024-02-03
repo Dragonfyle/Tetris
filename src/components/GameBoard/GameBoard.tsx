@@ -2,15 +2,10 @@ import { useState } from "react";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
 import { BOARD_DIMENSIONS, BOARD_EDGE } from "../../config/board";
 import { INITIAL_INTERVAL } from "../../config/initialSettings";
-import createMatrix from "../../utils/gameBoardMatrix";
+import { GameBoardMatrix, createMatrix } from "../../utils/gameBoardMatrix";
 import useKeyboardControls from "../../hooks/useKeyboardControls";
 import useFallingBlock from "../../hooks/useFallingBlock";
-import { blockCoords } from "../../utils/globalTypes";
-
-export interface BlockPositionProps {
-  x: number;
-  y: number;
-}
+import { BlockCoords } from "../../utils/globalTypes";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
@@ -39,7 +34,6 @@ export default function GameBoard() {
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     isBlockedUnder: isBlocked.under,
-    // rearrangeRows,
     fallInterval,
   });
   useKeyboardControls({
@@ -50,8 +44,8 @@ export default function GameBoard() {
   });
 
   function createReadyToRender(
-    staticBlocksMatrix: boolean[][],
-    blockPosition: blockCoords
+    staticBlocksMatrix: GameBoardMatrix,
+    blockPosition: BlockCoords
   ) {
     const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));
     readyToRender[blockPosition.y][blockPosition.x] = true;

@@ -1,4 +1,4 @@
-export type blockCoords = {
+export type BlockCoords = {
   x: number;
   y: number;
 };
