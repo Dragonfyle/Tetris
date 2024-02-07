@@ -1,4 +1,4 @@
-import { blockList, Block, translateCoordsToStartPos } from "./block/block";
+import { blockList, Block, translateCoordsToSpawnPos } from "./block/block";
 
 export default function getRandomBlock() {
   const blockOptions = Object.keys(blockList) as Array<Block>;
@@ -6,5 +6,5 @@ export default function getRandomBlock() {
   const randomNumber = Math.floor(Math.random() * numBlocks);
   const key = blockOptions[randomNumber];
 
-  return translateCoordsToStartPos(blockList[key].coordList);
+  return translateCoordsToSpawnPos(blockList[key].coordList);
 }

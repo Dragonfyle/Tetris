@@ -1,3 +1,7 @@
+import { BlockCoords } from "../../utils/block/block";
+import { MoveDirection, SquareCoords } from "../../types/globalTypes";
+import { BOARD_EDGE } from "../../config/board";
+
 export type GameBoardMatrix = boolean[][];
 
 export function createMatrix(width: number, height: number): GameBoardMatrix {
@@ -19,6 +23,45 @@ export function createMatrix(width: number, height: number): GameBoardMatrix {
       },
       { currentRow: 0, matrix: [] }
     ).matrix;
+}
+
+function isOnBoard([y, x]: SquareCoords) {
+  return (
+    y >= BOARD_EDGE.TOP &&
+    y <= BOARD_EDGE.BOTTOM &&
+    x >= BOARD_EDGE.LEFT &&
+    x <= BOARD_EDGE.RIGHT
+  );
+}
+
+function getAdjacentPosition(
+  direction: MoveDirection,
+  staticBlocksMatrix: GameBoardMatrix,
+  [y, x]: SquareCoords
+) {
+  switch (direction) {
+    case "left":
+      return staticBlocksMatrix[y]?.[x - 1];
+    case "right":
+      return staticBlocksMatrix[y]?.[x + 1];
+    case "down":
+      return staticBlocksMatrix[y + 1]?.[x];
+  }
+}
+
+export function isPositionOccupied(
+  direction: MoveDirection,
+  coords: BlockCoords,
+  staticBlocksMatrix: GameBoardMatrix
+) {
+  return coords.some(([y, x]) => {
+    if (
+      isOnBoard([y, x]) &&
+      getAdjacentPosition(direction, staticBlocksMatrix, [y, x])
+    ) {
+      return true;
+    }
+  });
 }
 
 export function createRow(width: number) {

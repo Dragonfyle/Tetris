@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BlockCoords } from "../utils/block/block";
+import { BlockCoords, translateCoordsToSpawnPos } from "../utils/block/block";
 import getRandomBlock from "../utils/getRandomBlock";
 
 interface FallingBlockProps {
@@ -26,11 +26,16 @@ export default function useFallingBlock({
   const lastIntervalTimeStamp = useRef(0);
   passedTime.current = Date.now() - lastIntervalTimeStamp.current;
 
-  useEffect(() => {
-    function createNewBlock() {
-      setBlockPosition(getRandomBlock());
-    }
+  const spawnBlock = useCallback(
+    function spawnBlock() {
+      const block = getRandomBlock();
+      const spawnPos = translateCoordsToSpawnPos(block);
+      setBlockPosition(spawnPos);
+    },
+    [setBlockPosition]
+  );
 
+  useEffect(() => {
     const fall = setInterval(() => {
       lastIntervalTimeStamp.current = Date.now();
 
@@ -39,10 +44,9 @@ export default function useFallingBlock({
       }
       if (isBlockedUnder) {
         handleBlockSettle(setStaticBlocksMatrix, blockPosition);
-        createNewBlock();
+        spawnBlock();
       } else {
         setBlockPosition((prevPos) => {
-          //todo moveBlockFn
           const newPos = prevPos.map(([y, x]) => [y + 1, x]);
           return newPos;
         });
@@ -59,6 +63,7 @@ export default function useFallingBlock({
     setStaticBlocksMatrix,
     isBlockedUnder,
     fallInterval,
+    spawnBlock,
   ]);
 
   return [blockPosition, setBlockPosition] as const;
