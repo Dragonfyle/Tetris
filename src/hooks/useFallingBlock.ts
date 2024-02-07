@@ -8,7 +8,7 @@ interface FallingBlockProps {
   setBlockPosition: React.Dispatch<React.SetStateAction<BlockCoords>>;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
-  isBlockedUnder: boolean;
+  isBlockedDown: boolean;
   fallInterval: number;
 }
 
@@ -19,7 +19,7 @@ export default function useFallingBlock({
   setBlockPosition,
   staticBlocksMatrix,
   setStaticBlocksMatrix,
-  isBlockedUnder,
+  isBlockedDown,
   fallInterval,
 }: FallingBlockProps) {
   const passedTime = useRef(0);
@@ -42,7 +42,7 @@ export default function useFallingBlock({
       if (!staticBlocksMatrix || typeof setStaticBlocksMatrix !== "function") {
         return;
       }
-      if (isBlockedUnder) {
+      if (isBlockedDown) {
         handleBlockSettle(setStaticBlocksMatrix, blockPosition);
         spawnBlock();
       } else {
@@ -61,7 +61,7 @@ export default function useFallingBlock({
     setBlockPosition,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
-    isBlockedUnder,
+    isBlockedDown,
     fallInterval,
     spawnBlock,
   ]);

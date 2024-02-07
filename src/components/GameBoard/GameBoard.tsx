@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
-import { BOARD_DIMENSIONS, BOARD_EDGE } from "../../config/board";
+import { BOARD_DIMENSIONS } from "../../config/board";
 import { INITIAL_INTERVAL } from "../../config/initialSettings";
 import {
-  GameBoardMatrix,
   createMatrix,
+  isBoardEdge,
   isPositionOccupied,
+  createReadyToRender,
 } from "./GameBoard.utils";
 import useKeyboardControls from "../../hooks/useKeyboardControls";
 import useFallingBlock from "../../hooks/useFallingBlock";
-import { BlockCoords } from "../../utils/block/block";
 import getRandomBlock from "../../utils/getRandomBlock";
 
 export default function GameBoard() {
@@ -25,15 +25,9 @@ export default function GameBoard() {
     down: isPositionOccupied("down", blockPosition, staticBlocksMatrix),
   };
   const isBlocked = {
-    under:
-      isSquareOccupied.down ||
-      blockPosition.some(([y, _]) => y === BOARD_EDGE.BOTTOM),
-    left:
-      isSquareOccupied.left ||
-      blockPosition.some(([_, x]) => x === BOARD_EDGE.LEFT),
-    right:
-      isSquareOccupied.right ||
-      blockPosition.some(([_, x]) => x === BOARD_EDGE.RIGHT),
+    left: isSquareOccupied.left || isBoardEdge("left", blockPosition),
+    right: isSquareOccupied.right || isBoardEdge("right", blockPosition),
+    down: isSquareOccupied.down || isBoardEdge("down", blockPosition),
   };
 
   useFallingBlock({
@@ -41,7 +35,7 @@ export default function GameBoard() {
     setBlockPosition,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
-    isBlockedUnder: isBlocked.under,
+    isBlockedDown: isBlocked.down,
     fallInterval,
   });
   useKeyboardControls({
@@ -50,21 +44,6 @@ export default function GameBoard() {
     isBlockedLeft: isBlocked.left,
     isBlockedRight: isBlocked.right,
   });
-
-  function createReadyToRender(
-    staticBlocksMatrix: GameBoardMatrix,
-    blockPosition: BlockCoords
-  ) {
-    const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));
-    blockPosition.map(([y, x]) => {
-      if (x < 0 || y < 0) {
-        return;
-      }
-      readyToRender[y][x] = true;
-    });
-
-    return readyToRender;
-  }
 
   function renderSquares() {
     const componentArray = [];
