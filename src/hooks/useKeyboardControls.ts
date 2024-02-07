@@ -51,7 +51,7 @@ export default function useKeyboardControls({
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setFallInterval(1000);
+          setFallInterval(500);
         }
       }
 

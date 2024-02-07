@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
 import { BOARD_DIMENSIONS, BOARD_EDGE } from "../../config/board";
 import { INITIAL_INTERVAL } from "../../config/initialSettings";
-import { GameBoardMatrix, createMatrix } from "./GameBoard.utils";
+import {
+  GameBoardMatrix,
+  createMatrix,
+  isPositionOccupied,
+} from "./GameBoard.utils";
 import useKeyboardControls from "../../hooks/useKeyboardControls";
 import useFallingBlock from "../../hooks/useFallingBlock";
 import { BlockCoords } from "../../utils/block/block";
@@ -16,9 +20,9 @@ export default function GameBoard() {
   const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
 
   const isSquareOccupied = {
-    left: blockPosition.some(([y, x]) => staticBlocksMatrix[y]?.[x - 1]),
-    right: blockPosition.some(([y, x]) => staticBlocksMatrix[y]?.[x + 1]),
-    down: blockPosition.some(([y, x]) => staticBlocksMatrix[y + 1]?.[x]),
+    left: isPositionOccupied("left", blockPosition, staticBlocksMatrix),
+    right: isPositionOccupied("right", blockPosition, staticBlocksMatrix),
+    down: isPositionOccupied("down", blockPosition, staticBlocksMatrix),
   };
   const isBlocked = {
     under:
@@ -52,8 +56,12 @@ export default function GameBoard() {
     blockPosition: BlockCoords
   ) {
     const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));
-    console.log(blockPosition);
-    blockPosition.map(([y, x]) => (readyToRender[y][x] = true));
+    blockPosition.map(([y, x]) => {
+      if (x < 0 || y < 0) {
+        return;
+      }
+      readyToRender[y][x] = true;
+    });
 
     return readyToRender;
   }
