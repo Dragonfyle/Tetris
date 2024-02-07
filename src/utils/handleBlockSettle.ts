@@ -1,5 +1,5 @@
 import { BlockCoords } from "./block/block";
-import { GameBoardMatrix } from "../components/GameBoard/GameBoard.utils";
+import { GameBoardMatrix } from "../types/globalTypes";
 import { createRow } from "../components/GameBoard/GameBoard.utils";
 import { pruneRow } from "../components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "../config/board";
