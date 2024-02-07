@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { BlockPositionProps } from "../components/GameBoard/GameBoard";
+import { BlockCoords, translateBlockPosition } from "../utils/block/block";
 
-interface KeyboardControsProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<BlockPositionProps>>;
+interface KeyboardControlsProps {
+  onKeyDown: React.Dispatch<React.SetStateAction<BlockCoords>>;
   setFallInterval: React.Dispatch<React.SetStateAction<number>>;
   isBlockedLeft: boolean;
   isBlockedRight: boolean;
@@ -13,7 +13,7 @@ export default function useKeyboardControls({
   setFallInterval,
   isBlockedLeft,
   isBlockedRight,
-}: KeyboardControsProps) {
+}: KeyboardControlsProps) {
   const [isDown, setIsDown] = useState(false);
 
   const keyboardListener = useCallback(
@@ -30,7 +30,7 @@ export default function useKeyboardControls({
         if (isBlockedLeft) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => ({ ...prev, x: prev.x - 1 }));
+          onKeyDown((prev) => translateBlockPosition(prev, "left"));
         }
       }
 
@@ -38,10 +38,7 @@ export default function useKeyboardControls({
         if (isBlockedRight) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => ({
-            ...prev,
-            x: prev.x + 1,
-          }));
+          onKeyDown((prev) => translateBlockPosition(prev, "right"));
         }
       }
 

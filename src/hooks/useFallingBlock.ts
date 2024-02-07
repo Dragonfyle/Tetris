@@ -1,16 +1,14 @@
 import { useEffect, useRef } from "react";
-import { solidifyBlock } from "../utils/solidifyBlock";
-import { blockCoords } from "../utils/globalTypes";
+import { handleBlockSettle } from "../utils/handleBlockSettle";
+import { BlockCoords } from "../utils/block/block";
+import getRandomBlock from "../utils/getRandomBlock";
 
 interface FallingBlockProps {
-  blockPosition: blockCoords;
-  setBlockPosition: React.Dispatch<
-    React.SetStateAction<{ x: number; y: number }>
-  >;
+  blockPosition: BlockCoords;
+  setBlockPosition: React.Dispatch<React.SetStateAction<BlockCoords>>;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
   isBlockedUnder: boolean;
-  // rearrangeRows: () => void;
   fallInterval: number;
 }
 
@@ -22,7 +20,6 @@ export default function useFallingBlock({
   staticBlocksMatrix,
   setStaticBlocksMatrix,
   isBlockedUnder,
-  // rearrangeRows,
   fallInterval,
 }: FallingBlockProps) {
   const passedTime = useRef(0);
@@ -31,7 +28,7 @@ export default function useFallingBlock({
 
   useEffect(() => {
     function createNewBlock() {
-      setBlockPosition({ x: 3, y: 0 });
+      setBlockPosition(getRandomBlock());
     }
 
     const fall = setInterval(() => {
@@ -41,12 +38,13 @@ export default function useFallingBlock({
         return;
       }
       if (isBlockedUnder) {
-        solidifyBlock(setStaticBlocksMatrix, blockPosition);
-        // rearrangeRows();
+        handleBlockSettle(setStaticBlocksMatrix, blockPosition);
         createNewBlock();
       } else {
         setBlockPosition((prevPos) => {
-          return { ...prevPos, y: prevPos.y + 1 };
+          //todo moveBlockFn
+          const newPos = prevPos.map(([y, x]) => [y + 1, x]);
+          return newPos;
         });
       }
     }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
@@ -60,7 +58,6 @@ export default function useFallingBlock({
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     isBlockedUnder,
-    // rearrangeRows,
     fallInterval,
   ]);
 
