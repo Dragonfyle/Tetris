@@ -1,12 +1,11 @@
 import { useEffect, useRef } from "react";
 import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BlockCoords } from "../utils/globalTypes";
+import { BlockCoords } from "../utils/block/block";
+import getRandomBlock from "../utils/getRandomBlock";
 
 interface FallingBlockProps {
   blockPosition: BlockCoords;
-  setBlockPosition: React.Dispatch<
-    React.SetStateAction<{ x: number; y: number }>
-  >;
+  setBlockPosition: React.Dispatch<React.SetStateAction<BlockCoords>>;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
   isBlockedUnder: boolean;
@@ -29,7 +28,7 @@ export default function useFallingBlock({
 
   useEffect(() => {
     function createNewBlock() {
-      setBlockPosition({ x: 3, y: 0 });
+      setBlockPosition(getRandomBlock());
     }
 
     const fall = setInterval(() => {
@@ -44,7 +43,8 @@ export default function useFallingBlock({
       } else {
         setBlockPosition((prevPos) => {
           //todo moveBlockFn
-          return { ...prevPos, y: prevPos.y + 1 };
+          const newPos = prevPos.map(([y, x]) => [y + 1, x]);
+          return newPos;
         });
       }
     }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));

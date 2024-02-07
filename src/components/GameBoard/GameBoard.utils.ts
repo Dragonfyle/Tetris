@@ -20,3 +20,15 @@ export function createMatrix(width: number, height: number): GameBoardMatrix {
       { currentRow: 0, matrix: [] }
     ).matrix;
 }
+
+export function createRow(width: number) {
+  return Array(width).fill(Boolean);
+}
+
+export function pruneRow(row: boolean[]) {
+  if (!row.every((column: boolean) => column)) {
+    return row;
+  } else {
+    return null;
+  }
+}

@@ -2,30 +2,34 @@ import { useState } from "react";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
 import { BOARD_DIMENSIONS, BOARD_EDGE } from "../../config/board";
 import { INITIAL_INTERVAL } from "../../config/initialSettings";
-import { GameBoardMatrix, createMatrix } from "../../utils/gameBoardMatrix";
+import { GameBoardMatrix, createMatrix } from "./GameBoard.utils";
 import useKeyboardControls from "../../hooks/useKeyboardControls";
 import useFallingBlock from "../../hooks/useFallingBlock";
-import { BlockCoords } from "../../utils/globalTypes";
+import { BlockCoords } from "../../utils/block/block";
+import getRandomBlock from "../../utils/getRandomBlock";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
-  const [blockPosition, setBlockPosition] = useState({
-    x: 5,
-    y: 0,
-  });
+  const [blockPosition, setBlockPosition] = useState(getRandomBlock());
   const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
 
   const isSquareOccupied = {
-    left: staticBlocksMatrix[blockPosition.y]?.[blockPosition.x - 1],
-    right: staticBlocksMatrix[blockPosition.y]?.[blockPosition.x + 1],
-    down: staticBlocksMatrix[blockPosition.y + 1]?.[blockPosition.x],
+    left: blockPosition.some(([y, x]) => staticBlocksMatrix[y]?.[x - 1]),
+    right: blockPosition.some(([y, x]) => staticBlocksMatrix[y]?.[x + 1]),
+    down: blockPosition.some(([y, x]) => staticBlocksMatrix[y + 1]?.[x]),
   };
   const isBlocked = {
-    under: blockPosition.y === BOARD_EDGE.BOTTOM || isSquareOccupied.down,
-    left: blockPosition.x === BOARD_EDGE.LEFT || isSquareOccupied.left,
-    right: blockPosition.x === BOARD_EDGE.RIGHT || isSquareOccupied.right,
+    under:
+      isSquareOccupied.down ||
+      blockPosition.some(([y, _]) => y === BOARD_EDGE.BOTTOM),
+    left:
+      isSquareOccupied.left ||
+      blockPosition.some(([_, x]) => x === BOARD_EDGE.LEFT),
+    right:
+      isSquareOccupied.right ||
+      blockPosition.some(([_, x]) => x === BOARD_EDGE.RIGHT),
   };
 
   useFallingBlock({
@@ -48,7 +52,8 @@ export default function GameBoard() {
     blockPosition: BlockCoords
   ) {
     const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));
-    readyToRender[blockPosition.y][blockPosition.x] = true;
+    console.log(blockPosition);
+    blockPosition.map(([y, x]) => (readyToRender[y][x] = true));
 
     return readyToRender;
   }

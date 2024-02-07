@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { BlockCoords } from "../utils/globalTypes";
+import { BlockCoords, translateBlockPosition } from "../utils/block/block";
 
 interface KeyboardControlsProps {
   onKeyDown: React.Dispatch<React.SetStateAction<BlockCoords>>;
@@ -30,8 +30,7 @@ export default function useKeyboardControls({
         if (isBlockedLeft) return;
 
         if (e.type === "keydown") {
-          //todo moveBlockFn
-          onKeyDown((prev) => ({ ...prev, x: prev.x - 1 }));
+          onKeyDown((prev) => translateBlockPosition(prev, "left"));
         }
       }
 
@@ -39,10 +38,7 @@ export default function useKeyboardControls({
         if (isBlockedRight) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => ({
-            ...prev,
-            x: prev.x + 1,
-          }));
+          onKeyDown((prev) => translateBlockPosition(prev, "right"));
         }
       }
 

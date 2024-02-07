@@ -1,12 +1,12 @@
-import { BlockCoords } from "../utils/globalTypes";
-import { GameBoardMatrix } from "./gameBoardMatrix";
-import { pruneRow } from "./pruneRows";
+import { BlockCoords } from "./block/block";
+import { GameBoardMatrix } from "../components/GameBoard/GameBoard.utils";
+import { createRow } from "../components/GameBoard/GameBoard.utils";
+import { pruneRow } from "../components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "../config/board";
-import { createRow } from "./createMatrixRow";
 
 function solidifyBlock(matrix: GameBoardMatrix, coords: BlockCoords) {
   const newMatrix = JSON.parse(JSON.stringify(matrix));
-  newMatrix[coords.y][coords.x] = true;
+  coords.map(([y, x]) => (newMatrix[y][x] = true));
 
   return newMatrix;
 }
