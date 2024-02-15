@@ -1,10 +1,19 @@
-import { blockList, Block, translateCoordsToSpawnPos } from "./block/block";
+import {
+  BlockName,
+  renderableBlockList,
+  translateCoordsToSpawnPos,
+} from "./block/block";
+import { BLOCK_DEFINITIONS } from "../data/blockData";
 
-export default function getRandomBlock() {
-  const blockOptions = Object.keys(blockList) as Array<Block>;
-  const numBlocks = blockOptions.length;
+function getRandomBlock() {
+  const blockNames = Object.keys(BLOCK_DEFINITIONS) as BlockName[];
+  const numBlocks = blockNames.length;
   const randomNumber = Math.floor(Math.random() * numBlocks);
-  const key = blockOptions[randomNumber];
 
-  return translateCoordsToSpawnPos(blockList[key].coordList);
+  return blockNames[randomNumber];
+}
+
+export default function createNewBlock() {
+  const block = getRandomBlock();
+  return translateCoordsToSpawnPos(renderableBlockList[block]);
 }

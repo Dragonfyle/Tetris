@@ -3,20 +3,20 @@ import { Wrapper, Board, Square } from "./GameBoard.parts";
 import { BOARD_DIMENSIONS } from "../../config/board";
 import { INITIAL_INTERVAL } from "../../config/initialSettings";
 import {
-  createMatrix,
   isBoardEdge,
   isPositionOccupied,
   createReadyToRender,
 } from "./GameBoard.utils";
+import { createMatrix } from "../../utils/matrix";
 import useKeyboardControls from "../../hooks/useKeyboardControls";
 import useFallingBlock from "../../hooks/useFallingBlock";
-import getRandomBlock from "../../utils/getRandomBlock";
+import createNewBlock from "../../utils/getRandomBlock";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
-  const [blockPosition, setBlockPosition] = useState(getRandomBlock());
+  const [blockPosition, setBlockPosition] = useState(createNewBlock());
   const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
 
   const isSquareOccupied = {

@@ -1,31 +1,10 @@
-import { BlockCoords } from "../../utils/block/block";
+import { BlockCoords } from "../../types/globalTypes";
 import {
   MoveDirection,
   SquareCoords,
   GameBoardMatrix,
 } from "../../types/globalTypes";
 import { BOARD_EDGE } from "../../config/board";
-
-export function createMatrix(width: number, height: number): GameBoardMatrix {
-  return Array(width * height)
-    .fill(false, 0, width * height)
-    .reduce(
-      (acc, el, idx) => {
-        if (idx % width === 0 && idx) {
-          acc.currentRow += 1;
-        }
-
-        if (!acc.matrix[acc.currentRow]) {
-          acc.matrix[acc.currentRow] = [];
-        }
-
-        acc.matrix[acc.currentRow].push(el);
-
-        return acc;
-      },
-      { currentRow: 0, matrix: [] }
-    ).matrix;
-}
 
 function isOnBoard([y, x]: SquareCoords) {
   return (
@@ -51,7 +30,7 @@ function getAdjacentPosition(
   }
 }
 
-export function isPositionOccupied(
+function isPositionOccupied(
   direction: MoveDirection,
   blockPosition: BlockCoords,
   staticBlocksMatrix: GameBoardMatrix
@@ -66,10 +45,7 @@ export function isPositionOccupied(
   });
 }
 
-export function isBoardEdge(
-  direction: MoveDirection,
-  blockPosition: BlockCoords
-) {
+function isBoardEdge(direction: MoveDirection, blockPosition: BlockCoords) {
   switch (direction) {
     case "left":
       return blockPosition.some(([, x]) => x === BOARD_EDGE.LEFT);
@@ -80,11 +56,7 @@ export function isBoardEdge(
   }
 }
 
-export function createRow(width: number) {
-  return Array(width).fill(Boolean);
-}
-
-export function pruneRow(row: boolean[]) {
+function pruneRow(row: boolean[]) {
   if (!row.every((column: boolean) => column)) {
     return row;
   } else {
@@ -92,7 +64,7 @@ export function pruneRow(row: boolean[]) {
   }
 }
 
-export function createReadyToRender(
+function createReadyToRender(
   staticBlocksMatrix: GameBoardMatrix,
   blockPosition: BlockCoords
 ) {
@@ -106,3 +78,12 @@ export function createReadyToRender(
 
   return readyToRender;
 }
+
+export {
+  isOnBoard,
+  getAdjacentPosition,
+  isPositionOccupied,
+  isBoardEdge,
+  pruneRow,
+  createReadyToRender,
+};

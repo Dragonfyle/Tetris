@@ -1,98 +1,75 @@
-import { MoveDirection } from "../../types/globalTypes";
+import { BLOCK_DEFINITIONS } from "../../data/blockData";
+import {
+  MoveDirection,
+  BlockCoords,
+  CoordsPair,
+} from "../../types/globalTypes";
 import { SPAWN_LOCATION } from "../../config/initialSettings";
+import { transformDefinitions } from "../transformDefinitions";
 
-export type BlockList = typeof blockList;
+type BlockShape = (0 | 1)[][];
 
-export type BlockCoords = typeof blockList.I.coordList;
+type PrimitiveBlockDefinitions = typeof BLOCK_DEFINITIONS;
 
-export type Block = keyof typeof blockList;
+type BlockName = keyof PrimitiveBlockDefinitions;
 
-export const blockList = Object.freeze({
-  I: {
-    coordList: [
-      //the first element is a spawner hook - it will be used to position the block on the board when it spawns
-      [0, 0],
-      [-1, 0],
-      [-2, 0],
-      [-3, 0],
-    ],
-  },
-  L: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-2, 0],
-      [0, 1],
-    ],
-  },
-  J: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-2, 0],
-      [0, -1],
-    ],
-  },
-  S: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [1, -1],
-      [0, -1],
-    ],
-  },
-  Z: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-1, -1],
-      [0, 1],
-    ],
-  },
-  T: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-1, -1],
-      [-1, 1],
-    ],
-  },
-  O: {
-    coordList: [
-      [0, 0],
-      [0, 1],
-      [-1, 0],
-      [-1, 1],
-    ],
-  },
-});
+type RotationsList = BlockCoords[];
+
+type RenderableBlockDefinition = {
+  rotations: RotationsList;
+  spawnHook: CoordsPair;
+};
+
+type RenderableBlockList = { [key: string]: RenderableBlockDefinition };
 
 const SPAWN_HOOK_IDX = 0;
 
+const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
+
 const [spawnLocationY, spawnLocationX] = SPAWN_LOCATION;
 
-export function translateCoordsToSpawnPos(coords: BlockCoords) {
-  const [spawnHookY, spawnHookX] = coords[SPAWN_HOOK_IDX];
+function translateCoordsToSpawnPos({
+  rotations,
+  spawnHook,
+}: RenderableBlockDefinition) {
+  const [spawnHookY, spawnHookX] = spawnHook;
   const [translationY, translationX] = [
     spawnLocationY - spawnHookY,
     spawnLocationX - spawnHookX,
   ];
 
-  return coords.map(([y, x]) => {
-    return [y + translationY, x + translationX];
+  return rotations[SPAWN_HOOK_IDX].map(([y, x]) => {
+    return [y + translationY, x + translationX] as CoordsPair;
   });
 }
 
-export function translateBlockPosition(
-  coords: BlockCoords,
-  direction: MoveDirection
-) {
+function translateBlockPosition(coords: BlockCoords, direction: MoveDirection) {
   switch (direction) {
     case "down":
-      return coords.map(([y, x]) => [y + 1, x]);
+      return coords.map(([y, x]) => [y + 1, x]) as BlockCoords;
     case "left":
-      return coords.map(([y, x]) => [y, x - 1]);
+      return coords.map(([y, x]) => [y, x - 1]) as BlockCoords;
     case "right":
-      return coords.map(([y, x]) => [y, x + 1]);
+      return coords.map(([y, x]) => [y, x + 1]) as BlockCoords;
   }
 }
+
+function rotateBlockClockwise(blockPosition: BlockCoords) {
+  return blockPosition.map(([y, x]) => [-x, y]) as BlockCoords;
+}
+
+export type {
+  BlockShape,
+  BlockName,
+  RenderableBlockList,
+  RenderableBlockDefinition,
+  PrimitiveBlockDefinitions,
+  RotationsList,
+};
+
+export {
+  renderableBlockList,
+  translateCoordsToSpawnPos,
+  translateBlockPosition,
+  rotateBlockClockwise,
+};

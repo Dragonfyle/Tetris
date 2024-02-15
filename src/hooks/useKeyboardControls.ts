@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { BlockCoords, translateBlockPosition } from "../utils/block/block";
+import {
+  rotateBlockClockwise,
+  translateBlockPosition,
+} from "../utils/block/block";
+import { BlockCoords } from "../types/globalTypes";
 
 interface KeyboardControlsProps {
   onKeyDown: React.Dispatch<React.SetStateAction<BlockCoords>>;
@@ -22,8 +26,8 @@ export default function useKeyboardControls({
         ARROW_DOWN: "ArrowDown",
         ARROW_LEFT: "ArrowLeft",
         ARROW_RIGHT: "ArrowRight",
+        SPACE: " ",
       };
-
       const isKeySupported = Object.keys(supportedKeys).includes(e.key);
 
       function handleLeft() {
@@ -55,6 +59,10 @@ export default function useKeyboardControls({
         }
       }
 
+      function handleRotate() {
+        onKeyDown((prev) => rotateBlockClockwise(prev));
+      }
+
       if (isKeySupported) {
         e.preventDefault();
         e.stopPropagation();
@@ -69,6 +77,9 @@ export default function useKeyboardControls({
           break;
         case supportedKeys.ARROW_DOWN:
           handleDown();
+          break;
+        case supportedKeys.SPACE:
+          handleRotate();
           break;
       }
     },

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BlockCoords, translateCoordsToSpawnPos } from "../utils/block/block";
-import getRandomBlock from "../utils/getRandomBlock";
+import { BlockCoords } from "../types/globalTypes";
+import createNewBlock from "../utils/getRandomBlock";
 
 interface FallingBlockProps {
   blockPosition: BlockCoords;
@@ -28,9 +28,9 @@ export default function useFallingBlock({
 
   const spawnBlock = useCallback(
     function spawnBlock() {
-      const block = getRandomBlock();
-      const spawnPos = translateCoordsToSpawnPos(block);
-      setBlockPosition(spawnPos);
+      const block = createNewBlock();
+
+      setBlockPosition(block);
     },
     [setBlockPosition]
   );
@@ -47,7 +47,7 @@ export default function useFallingBlock({
         spawnBlock();
       } else {
         setBlockPosition((prevPos) => {
-          const newPos = prevPos.map(([y, x]) => [y + 1, x]);
+          const newPos: BlockCoords = prevPos.map(([y, x]) => [y + 1, x]);
           return newPos;
         });
       }

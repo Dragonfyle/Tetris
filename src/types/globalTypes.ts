@@ -1,5 +1,17 @@
-export type SquareCoords = [y: number, x: number];
+type SquareCoords = [y: number, x: number];
 
-export type GameBoardMatrix = boolean[][];
+type CoordsPair = [number, number];
 
-export type MoveDirection = "down" | "left" | "right";
+type BlockCoords = CoordsPair[];
+
+type GameBoardMatrix = boolean[][];
+
+type MoveDirection = "down" | "left" | "right";
+
+export type {
+  SquareCoords,
+  CoordsPair,
+  BlockCoords,
+  GameBoardMatrix,
+  MoveDirection,
+};

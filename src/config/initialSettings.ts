@@ -1,3 +1,5 @@
-export const INITIAL_INTERVAL = 500;
+const INITIAL_INTERVAL = 500;
 
-export const SPAWN_LOCATION = [-1, 4];
+const SPAWN_LOCATION = [-1, 4];
+
+export { INITIAL_INTERVAL, SPAWN_LOCATION };

@@ -1,6 +1,6 @@
-import { BlockCoords } from "./block/block";
+import { BlockCoords } from "../types/globalTypes";
 import { GameBoardMatrix } from "../types/globalTypes";
-import { createRow } from "../components/GameBoard/GameBoard.utils";
+import { createRow } from "./matrix";
 import { pruneRow } from "../components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "../config/board";
 
@@ -16,7 +16,7 @@ function solidifyBlock(
   return newMatrix;
 }
 
-export function handleBlockSettle(
+function handleBlockSettle(
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<GameBoardMatrix>>,
   coords: BlockCoords
 ) {
@@ -38,3 +38,5 @@ export function handleBlockSettle(
     return newStaticMatrix;
   });
 }
+
+export { handleBlockSettle };
