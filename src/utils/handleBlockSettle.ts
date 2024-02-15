@@ -4,24 +4,29 @@ import { createRow } from "./matrix";
 import { pruneRow } from "../components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "../config/board";
 
+interface HandleBlockSettle {
+  blockPosition: BlockCoords;
+  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<GameBoardMatrix>>;
+}
+
 function solidifyBlock(
   matrix: GameBoardMatrix,
-  coords: BlockCoords
+  blockPosition: BlockCoords
 ): GameBoardMatrix {
   const newMatrix = JSON.parse(JSON.stringify(matrix));
-  coords.map(([y, x]) => {
+  blockPosition.map(([y, x]) => {
     newMatrix[y][x] = true;
   });
 
   return newMatrix;
 }
 
-function handleBlockSettle(
-  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<GameBoardMatrix>>,
-  coords: BlockCoords
-) {
+function handleBlockSettle({
+  blockPosition,
+  setStaticBlocksMatrix,
+}: HandleBlockSettle) {
   setStaticBlocksMatrix((prev) => {
-    const newStaticMatrix = solidifyBlock(prev, coords).reduce(
+    const newStaticMatrix = solidifyBlock(prev, blockPosition).reduce(
       (acc: GameBoardMatrix, row: boolean[]) => {
         const currentRow = pruneRow(row);
 

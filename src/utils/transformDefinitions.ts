@@ -1,12 +1,12 @@
-import type {
-  PrimitiveBlockDefinitions,
-  BlockShape,
-  RenderableBlockList,
-  RotationsList,
+import {
+  type PrimitiveBlockDefinitions,
+  type BlockShape,
+  type RenderableBlockList,
+  type RotationsList,
+  INITIAL_ROTATION_IDX,
+  NUM_ROTATIONS,
 } from "./block/block";
 import { CoordsPair } from "../types/globalTypes";
-
-const NUM_ROTATIONS = 4;
 
 function rotateClockwise(blockShape: BlockShape) {
   const inputShape = [...blockShape.map((row) => [...row])];
@@ -62,6 +62,7 @@ function transformDefinitions(blockDefinitions: PrimitiveBlockDefinitions) {
     renderableBlockDefinitions[key] = {
       rotations: getBlockRotationList(value.SHAPE),
       spawnHook: value.SPAWN_HOOK as CoordsPair,
+      activeRotation: INITIAL_ROTATION_IDX,
     };
   });
   return renderableBlockDefinitions;

@@ -15,14 +15,29 @@ type BlockName = keyof PrimitiveBlockDefinitions;
 
 type RotationsList = BlockCoords[];
 
+type RotationIdx = 0 | 1 | 2 | 3;
+
 type RenderableBlockDefinition = {
   rotations: RotationsList;
   spawnHook: CoordsPair;
+  activeRotation: RotationIdx;
 };
 
 type RenderableBlockList = { [key: string]: RenderableBlockDefinition };
 
-const SPAWN_HOOK_IDX = 0;
+interface TranslateBlockPosition {
+  coords: BlockCoords;
+  offset: CoordsPair;
+}
+
+type MoveBlockByOne = (
+  coords: CoordsPair,
+  direction: MoveDirection
+) => CoordsPair;
+
+const INITIAL_ROTATION_IDX = 0;
+
+const NUM_ROTATIONS = 4;
 
 const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
 
@@ -31,6 +46,7 @@ const [spawnLocationY, spawnLocationX] = SPAWN_LOCATION;
 function translateCoordsToSpawnPos({
   rotations,
   spawnHook,
+  activeRotation,
 }: RenderableBlockDefinition) {
   const [spawnHookY, spawnHookX] = spawnHook;
   const [translationY, translationX] = [
@@ -38,24 +54,45 @@ function translateCoordsToSpawnPos({
     spawnLocationX - spawnHookX,
   ];
 
-  return rotations[SPAWN_HOOK_IDX].map(([y, x]) => {
-    return [y + translationY, x + translationX] as CoordsPair;
-  });
+  return rotations[activeRotation].map(
+    ([y, x]) => [y + translationY, x + translationX] as CoordsPair
+  );
 }
 
-function translateBlockPosition(coords: BlockCoords, direction: MoveDirection) {
+function translateBlockPosition({
+  coords,
+  offset: [offsetY, offsetX],
+}: TranslateBlockPosition) {
+  return coords.map(([y, x]) => [y + offsetY, x + offsetX]);
+}
+
+const moveBlockByOne: MoveBlockByOne = ([y, x], direction) => {
   switch (direction) {
     case "down":
-      return coords.map(([y, x]) => [y + 1, x]) as BlockCoords;
+      return [y + 1, x] as CoordsPair;
     case "left":
-      return coords.map(([y, x]) => [y, x - 1]) as BlockCoords;
+      return [y, x - 1] as CoordsPair;
     case "right":
-      return coords.map(([y, x]) => [y, x + 1]) as BlockCoords;
+      return [y, x + 1] as CoordsPair;
+    default:
+      return [y, x] as CoordsPair;
   }
-}
+};
 
-function rotateBlockClockwise(blockPosition: BlockCoords) {
-  return blockPosition.map(([y, x]) => [-x, y]) as BlockCoords;
+function getNextRotation(
+  direction: "clockwise" | "counterclockwise",
+  currentRotationIndex: RotationIdx
+) {
+  switch (direction) {
+    case "clockwise":
+      return currentRotationIndex < NUM_ROTATIONS
+        ? currentRotationIndex++
+        : INITIAL_ROTATION_IDX;
+    case "counterclockwise":
+      return currentRotationIndex > INITIAL_ROTATION_IDX
+        ? currentRotationIndex--
+        : NUM_ROTATIONS - 1;
+  }
 }
 
 export type {
@@ -70,6 +107,9 @@ export type {
 export {
   renderableBlockList,
   translateCoordsToSpawnPos,
+  moveBlockByOne,
+  getNextRotation,
   translateBlockPosition,
-  rotateBlockClockwise,
+  INITIAL_ROTATION_IDX,
+  NUM_ROTATIONS,
 };

@@ -1,23 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  rotateBlockClockwise,
-  translateBlockPosition,
-} from "../utils/block/block";
-import { BlockCoords } from "../types/globalTypes";
+import { moveBlockByOne } from "../utils/block/block";
 
-interface KeyboardControlsProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<BlockCoords>>;
+interface useMovementProps {
+  onKeyDown: React.Dispatch<React.SetStateAction<CoordsPair>>;
   setFallInterval: React.Dispatch<React.SetStateAction<number>>;
   isBlockedLeft: boolean;
   isBlockedRight: boolean;
 }
 
-export default function useKeyboardControls({
+export default function useMovement({
   onKeyDown,
   setFallInterval,
   isBlockedLeft,
   isBlockedRight,
-}: KeyboardControlsProps) {
+}: useMovementProps) {
   const [isDown, setIsDown] = useState(false);
 
   const keyboardListener = useCallback(
@@ -26,7 +22,6 @@ export default function useKeyboardControls({
         ARROW_DOWN: "ArrowDown",
         ARROW_LEFT: "ArrowLeft",
         ARROW_RIGHT: "ArrowRight",
-        SPACE: " ",
       };
       const isKeySupported = Object.keys(supportedKeys).includes(e.key);
 
@@ -34,7 +29,7 @@ export default function useKeyboardControls({
         if (isBlockedLeft) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => translateBlockPosition(prev, "left"));
+          onKeyDown((prev) => moveBlockByOne(prev, "left"));
         }
       }
 
@@ -42,7 +37,7 @@ export default function useKeyboardControls({
         if (isBlockedRight) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => translateBlockPosition(prev, "right"));
+          onKeyDown((prev) => moveBlockByOne(prev, "right"));
         }
       }
 
@@ -59,10 +54,6 @@ export default function useKeyboardControls({
         }
       }
 
-      function handleRotate() {
-        onKeyDown((prev) => rotateBlockClockwise(prev));
-      }
-
       if (isKeySupported) {
         e.preventDefault();
         e.stopPropagation();
@@ -77,9 +68,6 @@ export default function useKeyboardControls({
           break;
         case supportedKeys.ARROW_DOWN:
           handleDown();
-          break;
-        case supportedKeys.SPACE:
-          handleRotate();
           break;
       }
     },

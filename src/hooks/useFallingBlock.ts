@@ -1,11 +1,18 @@
 import { useEffect, useRef, useCallback } from "react";
 import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BlockCoords } from "../types/globalTypes";
-import createNewBlock from "../utils/getRandomBlock";
+import { BlockCoords, CoordsPair } from "../types/globalTypes";
+import getRenderableBlock from "../utils/getRandomBlock";
+import {
+  RenderableBlockDefinition,
+  renderableBlockList,
+} from "../utils/block/block";
 
 interface FallingBlockProps {
   blockPosition: BlockCoords;
-  setBlockPosition: React.Dispatch<React.SetStateAction<BlockCoords>>;
+  setActiveBlock: React.Dispatch<
+    React.SetStateAction<RenderableBlockDefinition>
+  >;
+  setHookLocation: React.Dispatch<React.SetStateAction<CoordsPair>>;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
   isBlockedDown: boolean;
@@ -16,7 +23,8 @@ const MIN_INTERVAL = 0;
 
 export default function useFallingBlock({
   blockPosition,
-  setBlockPosition,
+  setActiveBlock,
+  setHookLocation,
   staticBlocksMatrix,
   setStaticBlocksMatrix,
   isBlockedDown,
@@ -28,11 +36,11 @@ export default function useFallingBlock({
 
   const spawnBlock = useCallback(
     function spawnBlock() {
-      const block = createNewBlock();
+      const block = getRenderableBlock(renderableBlockList);
 
-      setBlockPosition(block);
+      setActiveBlock(block);
     },
-    [setBlockPosition]
+    [setActiveBlock]
   );
 
   useEffect(() => {
@@ -43,13 +51,10 @@ export default function useFallingBlock({
         return;
       }
       if (isBlockedDown) {
-        handleBlockSettle(setStaticBlocksMatrix, blockPosition);
+        handleBlockSettle({ blockPosition, setStaticBlocksMatrix });
         spawnBlock();
       } else {
-        setBlockPosition((prevPos) => {
-          const newPos: BlockCoords = prevPos.map(([y, x]) => [y + 1, x]);
-          return newPos;
-        });
+        setHookLocation(([y, x]) => [y + 1, x]);
       }
     }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
 
@@ -58,13 +63,11 @@ export default function useFallingBlock({
     };
   }, [
     blockPosition,
-    setBlockPosition,
+    setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     isBlockedDown,
     fallInterval,
     spawnBlock,
   ]);
-
-  return [blockPosition, setBlockPosition] as const;
 }
