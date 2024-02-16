@@ -1,25 +1,72 @@
 import { useCallback, useEffect, useState } from "react";
-import { getNextRotation } from "../utils/block/block";
-import { BlockCoords } from "../types/globalTypes";
+import {
+  RenderableBlockDefinition,
+  RotationIdx,
+  getNextRotation,
+  translateBlockPosition,
+} from "../utils/block/block";
+import { isRotationPossible } from "../components/GameBoard/GameBoard.utils";
+import { CoordsPair, GameBoardMatrix } from "../types/globalTypes";
 
 interface useRotateProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<BlockCoords>>;
+  activeBlock: RenderableBlockDefinition;
+  staticBlocksMatrix: GameBoardMatrix;
+  hookLocation: CoordsPair;
 }
 
-export default function useKeyboardMovement({ onKeyDown }: useRotateProps) {
+export default function useRotate({
+  activeBlock,
+  staticBlocksMatrix,
+  hookLocation,
+}: useRotateProps) {
   const [isDown, setIsDown] = useState(false);
+  const [activeRotation, setActiveRotation] = useState(0 as RotationIdx);
+
+  const nextRotationIdx = {
+    clockwise: getNextRotation("clockwise", activeRotation),
+    counterclockwise: getNextRotation("counterclockwise", activeRotation),
+  };
+
+  const nextRotations = {
+    clockwise: activeBlock.rotations[nextRotationIdx.clockwise],
+    counterclockwise: activeBlock.rotations[nextRotationIdx.counterclockwise],
+  };
+
+  const translatedRotations = {
+    clockwise: translateBlockPosition({
+      coords: nextRotations.clockwise,
+      offset: hookLocation,
+    }),
+    counterclockwise: translateBlockPosition({
+      coords: nextRotations.counterclockwise,
+      offset: hookLocation,
+    }),
+  };
+
+  const canRotate = {
+    clockwise: isRotationPossible(
+      translatedRotations.clockwise,
+      staticBlocksMatrix
+    ),
+    counterclockwise: isRotationPossible(
+      translatedRotations.counterclockwise,
+      staticBlocksMatrix
+    ),
+  };
 
   const keyboardListener = useCallback(
     (e: KeyboardEvent) => {
       const supportedKeys = {
         SPACE: " ",
       };
-      const isKeySupported = Object.keys(supportedKeys).includes(e.key);
+      const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleRotate() {
         if (!isDown) {
           setIsDown(true);
-          onKeyDown((prev) => getNextRotation(prev));
+          setActiveRotation((prev) => {
+            return canRotate.clockwise ? nextRotationIdx.clockwise : prev;
+          });
         }
         if (e.type === "keyup") {
           setIsDown(false);
@@ -32,7 +79,7 @@ export default function useKeyboardMovement({ onKeyDown }: useRotateProps) {
         handleRotate();
       }
     },
-    [onKeyDown, isDown]
+    [canRotate.clockwise, isDown]
   );
 
   useEffect(() => {
@@ -44,4 +91,6 @@ export default function useKeyboardMovement({ onKeyDown }: useRotateProps) {
       window.removeEventListener("keyup", keyboardListener);
     };
   }, [keyboardListener]);
+
+  return [activeRotation];
 }

@@ -3,7 +3,6 @@ import {
   type BlockShape,
   type RenderableBlockList,
   type RotationsList,
-  INITIAL_ROTATION_IDX,
   NUM_ROTATIONS,
 } from "./block/block";
 import { CoordsPair } from "../types/globalTypes";
@@ -19,7 +18,6 @@ function rotateClockwise(blockShape: BlockShape) {
 function getMatrixRotations(blockShape: BlockShape) {
   const inputShape = [...blockShape.map((row) => [...row])];
   const AllRotations: BlockShape[] = [inputShape];
-  AllRotations.push(inputShape);
 
   for (let i = 1; i < NUM_ROTATIONS; i++) {
     AllRotations.push(rotateClockwise(AllRotations[i - 1]));
@@ -62,7 +60,6 @@ function transformDefinitions(blockDefinitions: PrimitiveBlockDefinitions) {
     renderableBlockDefinitions[key] = {
       rotations: getBlockRotationList(value.SHAPE),
       spawnHook: value.SPAWN_HOOK as CoordsPair,
-      activeRotation: INITIAL_ROTATION_IDX,
     };
   });
   return renderableBlockDefinitions;

@@ -4,8 +4,10 @@ import { BlockCoords, CoordsPair } from "../types/globalTypes";
 import getRenderableBlock from "../utils/getRandomBlock";
 import {
   RenderableBlockDefinition,
+  moveBlockByOne as moveHookByOne,
   renderableBlockList,
 } from "../utils/block/block";
+import { SPAWN_LOCATION } from "../config/initialSettings";
 
 interface FallingBlockProps {
   blockPosition: BlockCoords;
@@ -37,10 +39,16 @@ export default function useFallingBlock({
   const spawnBlock = useCallback(
     function spawnBlock() {
       const block = getRenderableBlock(renderableBlockList);
-
       setActiveBlock(block);
     },
     [setActiveBlock]
+  );
+
+  const resetHookLocation = useCallback(
+    function resetHookLocation() {
+      setHookLocation(() => SPAWN_LOCATION);
+    },
+    [setHookLocation]
   );
 
   useEffect(() => {
@@ -52,9 +60,10 @@ export default function useFallingBlock({
       }
       if (isBlockedDown) {
         handleBlockSettle({ blockPosition, setStaticBlocksMatrix });
+        resetHookLocation();
         spawnBlock();
       } else {
-        setHookLocation(([y, x]) => [y + 1, x]);
+        moveHookByOne(setHookLocation, "down");
       }
     }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
 
@@ -63,6 +72,7 @@ export default function useFallingBlock({
     };
   }, [
     blockPosition,
+    resetHookLocation,
     setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,

@@ -56,6 +56,15 @@ function isBoardEdge(direction: MoveDirection, blockPosition: BlockCoords) {
   }
 }
 
+function isRotationPossible(
+  intendedBlockPosition: BlockCoords,
+  staticBlocksMatrix: GameBoardMatrix
+) {
+  return intendedBlockPosition.every(
+    ([y, x]) => isOnBoard([y, x]) && !staticBlocksMatrix[y][x]
+  );
+}
+
 function pruneRow(row: boolean[]) {
   if (!row.every((column: boolean) => column)) {
     return row;
@@ -84,6 +93,7 @@ export {
   getAdjacentPosition,
   isPositionOccupied,
   isBoardEdge,
+  isRotationPossible,
   pruneRow,
   createReadyToRender,
 };

@@ -16,6 +16,7 @@ import {
   translateBlockPosition,
 } from "../../utils/block/block";
 import { BlockCoords } from "../../types/globalTypes";
+import useRotate from "../../hooks/useRotate";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
@@ -27,10 +28,16 @@ export default function GameBoard() {
   const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
   const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
 
-  const rotation = activeBlock.rotations[activeBlock.activeRotation];
+  const [activeRotation] = useRotate({
+    activeBlock,
+    staticBlocksMatrix,
+    hookLocation,
+  });
+
+  const currentRotation = activeBlock.rotations[activeRotation];
 
   const blockPosition = translateBlockPosition({
-    coords: rotation,
+    coords: currentRotation,
     offset: hookLocation,
   }) as BlockCoords;
 
@@ -39,6 +46,7 @@ export default function GameBoard() {
     right: isPositionOccupied("right", blockPosition, staticBlocksMatrix),
     down: isPositionOccupied("down", blockPosition, staticBlocksMatrix),
   };
+
   const isBlocked = {
     left: isSquareOccupied.left || isBoardEdge("left", blockPosition),
     right: isSquareOccupied.right || isBoardEdge("right", blockPosition),

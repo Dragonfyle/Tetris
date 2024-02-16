@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { moveBlockByOne } from "../utils/block/block";
+import { CoordsPair } from "../types/globalTypes";
 
 interface useMovementProps {
   onKeyDown: React.Dispatch<React.SetStateAction<CoordsPair>>;
@@ -23,13 +24,13 @@ export default function useMovement({
         ARROW_LEFT: "ArrowLeft",
         ARROW_RIGHT: "ArrowRight",
       };
-      const isKeySupported = Object.keys(supportedKeys).includes(e.key);
+      const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleLeft() {
         if (isBlockedLeft) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => moveBlockByOne(prev, "left"));
+          moveBlockByOne(onKeyDown, "left");
         }
       }
 
@@ -37,7 +38,7 @@ export default function useMovement({
         if (isBlockedRight) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => moveBlockByOne(prev, "right"));
+          moveBlockByOne(onKeyDown, "right");
         }
       }
 

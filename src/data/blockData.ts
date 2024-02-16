@@ -9,7 +9,7 @@ const BLOCK_DEFINITIONS = {
       [0, 0, 1, 0],
       [0, 0, 1, 0],
     ] as BlockShape,
-    SPAWN_HOOK: [3, 2],
+    SPAWN_HOOK: [2, 2],
   },
   L: {
     SHAPE: [

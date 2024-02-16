@@ -2,7 +2,6 @@ import {
   BlockName,
   PrimitiveBlockDefinitions,
   RenderableBlockList,
-  translateCoordsToSpawnPos,
 } from "./block/block";
 import { BLOCK_DEFINITIONS } from "../data/blockData";
 
@@ -23,5 +22,4 @@ export default function getRenderableBlock(
 ) {
   const block = getRandomBlockName(BLOCK_DEFINITIONS);
   return renderableBlocks[block];
-  // const blockAtSpawn = translateCoordsToSpawnPos(renderableBlock);
 }
