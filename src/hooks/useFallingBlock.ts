@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BlockCoords, CoordsPair } from "../types/globalTypes";
+import { BlockVectors, Vector } from "../types/globalTypes";
 import getRenderableBlock from "../utils/getRandomBlock";
 import {
   RenderableBlockDefinition,
@@ -10,11 +10,11 @@ import {
 import { SPAWN_LOCATION } from "../config/initialSettings";
 
 interface FallingBlockProps {
-  blockPosition: BlockCoords;
+  blockPosition: BlockVectors;
   setActiveBlock: React.Dispatch<
     React.SetStateAction<RenderableBlockDefinition>
   >;
-  setHookLocation: React.Dispatch<React.SetStateAction<CoordsPair>>;
+  setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
   staticBlocksMatrix: Array<boolean[]>;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
   isBlockedDown: boolean;

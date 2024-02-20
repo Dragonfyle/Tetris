@@ -1,37 +1,41 @@
 import { BLOCK_DEFINITIONS } from "../../data/blockData";
 import {
+  KeyOfType,
+  MappedKeysAndValues,
   MoveDirection,
-  BlockCoords,
-  CoordsPair,
+  RotationDirection,
+  BlockVectors,
+  Vector,
 } from "../../types/globalTypes";
 import { transformDefinitions } from "../transformDefinitions";
 
-type BlockShape = (0 | 1)[][];
+type BlockDefinition = (0 | 1)[][];
 
-type PrimitiveBlockDefinitions = typeof BLOCK_DEFINITIONS;
+type BlockDefinitions = typeof BLOCK_DEFINITIONS;
 
-type BlockName = keyof PrimitiveBlockDefinitions;
+type BlockName = KeyOfType<BlockDefinitions>;
 
-type RotationsList = BlockCoords[];
+type RotationsList = BlockVectors[];
 
 type RotationIdx = 0 | 1 | 2 | 3;
 
 type RenderableBlockDefinition = {
   rotations: RotationsList;
-  spawnHook: CoordsPair;
+  spawnHook: Vector;
 };
 
-type RotationDirection = "clockwise" | "counterclockwise";
-
-type RenderableBlockList = { [key: string]: RenderableBlockDefinition };
+type RenderableBlockList = MappedKeysAndValues<
+  BlockName,
+  RenderableBlockDefinition
+>;
 
 interface TranslateBlockPosition {
-  coords: BlockCoords;
-  offset: CoordsPair;
+  coords: BlockVectors;
+  offset: Vector;
 }
 
 type MoveBlockByOne = (
-  callback: React.Dispatch<React.SetStateAction<CoordsPair>>,
+  callback: React.Dispatch<React.SetStateAction<Vector>>,
   direction: MoveDirection
 ) => void;
 
@@ -44,7 +48,7 @@ const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
 function translateBlockPosition({
   coords,
   offset: [offsetY, offsetX],
-}: TranslateBlockPosition): BlockCoords {
+}: TranslateBlockPosition): BlockVectors {
   return coords.map(([y, x]) => [y + offsetY, x + offsetX]);
 }
 
@@ -79,14 +83,13 @@ function getNextRotation(
 }
 
 export type {
-  BlockShape,
+  BlockDefinition,
   BlockName,
   RenderableBlockList,
   RenderableBlockDefinition,
-  PrimitiveBlockDefinitions,
+  BlockDefinitions,
   RotationsList,
   RotationIdx,
-  RotationDirection,
 };
 
 export {
