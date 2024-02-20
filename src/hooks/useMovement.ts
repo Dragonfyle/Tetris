@@ -1,19 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
-import { BlockPositionProps } from "../components/GameBoard/GameBoard";
+import { moveBlockByOne } from "../utils/block/block";
+import { Vector } from "../types/globalTypes";
+import { INITIAL_INTERVAL } from "../config/initialSettings";
 
-interface KeyboardControsProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<BlockPositionProps>>;
+interface useMovementProps {
+  onKeyDown: React.Dispatch<React.SetStateAction<Vector>>;
   setFallInterval: React.Dispatch<React.SetStateAction<number>>;
   isBlockedLeft: boolean;
   isBlockedRight: boolean;
 }
 
-export default function useKeyboardControls({
+export default function useMovement({
   onKeyDown,
   setFallInterval,
   isBlockedLeft,
   isBlockedRight,
-}: KeyboardControsProps) {
+}: useMovementProps) {
   const [isDown, setIsDown] = useState(false);
 
   const keyboardListener = useCallback(
@@ -23,14 +25,13 @@ export default function useKeyboardControls({
         ARROW_LEFT: "ArrowLeft",
         ARROW_RIGHT: "ArrowRight",
       };
-
-      const isKeySupported = Object.keys(supportedKeys).includes(e.key);
+      const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleLeft() {
         if (isBlockedLeft) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => ({ ...prev, x: prev.x - 1 }));
+          moveBlockByOne(onKeyDown, "left");
         }
       }
 
@@ -38,10 +39,7 @@ export default function useKeyboardControls({
         if (isBlockedRight) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => ({
-            ...prev,
-            x: prev.x + 1,
-          }));
+          moveBlockByOne(onKeyDown, "right");
         }
       }
 
@@ -49,12 +47,12 @@ export default function useKeyboardControls({
         if (e.type === "keydown") {
           if (!isDown) {
             setIsDown(true);
-            setFallInterval((prev) => prev / 10);
+            setFallInterval((prev) => prev / 20);
           }
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setFallInterval(1000);
+          setFallInterval(INITIAL_INTERVAL);
         }
       }
 

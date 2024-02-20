@@ -1,7 +1,6 @@
-export default function createMatrix(
-  width: number,
-  height: number
-): boolean[][] {
+import { BinaryMatrix } from "../types/globalTypes";
+
+function createMatrix(width: number, height: number): BinaryMatrix {
   return Array(width * height)
     .fill(false, 0, width * height)
     .reduce(
@@ -21,3 +20,10 @@ export default function createMatrix(
       { currentRow: 0, matrix: [] }
     ).matrix;
 }
+
+function createRow(width: number) {
+  console.log(Array(width).fill(0));
+  return Array(width).fill(0);
+}
+
+export { createMatrix, createRow };

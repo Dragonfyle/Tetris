@@ -1,15 +1,23 @@
-import { useEffect, useRef } from "react";
-import { solidifyBlock } from "../utils/solidifyBlock";
-import { blockCoords } from "../utils/globalTypes";
+import { useEffect, useRef, useCallback } from "react";
+import { handleBlockSettle } from "../utils/handleBlockSettle";
+import { BinaryMatrix, BlockVectors, Vector } from "../types/globalTypes";
+import getRenderableBlock from "../utils/getRandomBlock";
+import {
+  RenderableBlockDefinition,
+  moveBlockByOne as moveHookByOne,
+  renderableBlockList,
+} from "../utils/block/block";
+import { SPAWN_LOCATION } from "../config/initialSettings";
 
 interface FallingBlockProps {
-  blockPosition: blockCoords;
-  setBlockPosition: React.Dispatch<
-    React.SetStateAction<{ x: number; y: number }>
+  blockPosition: BlockVectors;
+  setActiveBlock: React.Dispatch<
+    React.SetStateAction<RenderableBlockDefinition>
   >;
-  isBlockedUnder: boolean;
-  staticBlocksMatrix: Array<boolean[]>;
-  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
+  setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
+  staticBlocksMatrix: BinaryMatrix;
+  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
+  isBlockedDown: boolean;
   fallInterval: number;
 }
 
@@ -17,34 +25,45 @@ const MIN_INTERVAL = 0;
 
 export default function useFallingBlock({
   blockPosition,
-  setBlockPosition,
+  setActiveBlock,
+  setHookLocation,
   staticBlocksMatrix,
   setStaticBlocksMatrix,
-  isBlockedUnder,
+  isBlockedDown,
   fallInterval,
 }: FallingBlockProps) {
   const passedTime = useRef(0);
   const lastIntervalTimeStamp = useRef(0);
   passedTime.current = Date.now() - lastIntervalTimeStamp.current;
 
-  useEffect(() => {
-    function createNewBlock() {
-      setBlockPosition({ x: 3, y: 0 });
-    }
+  const spawnBlock = useCallback(
+    function spawnBlock() {
+      const block = getRenderableBlock(renderableBlockList);
+      setActiveBlock(block);
+    },
+    [setActiveBlock]
+  );
 
+  const resetHookLocation = useCallback(
+    function resetHookLocation() {
+      setHookLocation(() => SPAWN_LOCATION);
+    },
+    [setHookLocation]
+  );
+
+  useEffect(() => {
     const fall = setInterval(() => {
       lastIntervalTimeStamp.current = Date.now();
 
       if (!staticBlocksMatrix || typeof setStaticBlocksMatrix !== "function") {
         return;
       }
-      if (isBlockedUnder) {
-        solidifyBlock(setStaticBlocksMatrix, blockPosition);
-        createNewBlock();
+      if (isBlockedDown) {
+        handleBlockSettle({ blockPosition, setStaticBlocksMatrix });
+        resetHookLocation();
+        spawnBlock();
       } else {
-        setBlockPosition((prevPos) => {
-          return { ...prevPos, y: prevPos.y + 1 };
-        });
+        moveHookByOne(setHookLocation, "down");
       }
     }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
 
@@ -52,13 +71,13 @@ export default function useFallingBlock({
       clearInterval(fall);
     };
   }, [
-    setBlockPosition,
-    isBlockedUnder,
     blockPosition,
+    resetHookLocation,
+    setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
+    isBlockedDown,
     fallInterval,
+    spawnBlock,
   ]);
-
-  return [blockPosition, setBlockPosition] as const;
 }

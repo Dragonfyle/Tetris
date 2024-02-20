@@ -1,11 +1,13 @@
-export const BOARD_DIMENSIONS = {
+const BOARD_DIMENSIONS = {
   WIDTH: 10,
   HEIGHT: 20,
 };
 
-export const BOARD_EDGE = {
+const BOARD_EDGE = {
   LEFT: 0,
   RIGHT: BOARD_DIMENSIONS.WIDTH - 1,
   TOP: 0,
   BOTTOM: BOARD_DIMENSIONS.HEIGHT - 1,
 };
+
+export { BOARD_DIMENSIONS, BOARD_EDGE };
