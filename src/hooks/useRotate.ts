@@ -79,7 +79,7 @@ export default function useRotate({
         handleRotate();
       }
     },
-    [canRotate.clockwise, isDown]
+    [nextRotationIdx.clockwise, canRotate.clockwise, isDown]
   );
 
   useEffect(() => {

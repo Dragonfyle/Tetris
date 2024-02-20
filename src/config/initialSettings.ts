@@ -1,6 +1,6 @@
 import { CoordsPair } from "../types/globalTypes";
 
-const INITIAL_INTERVAL = 500;
+const INITIAL_INTERVAL = 100;
 
 const SPAWN_LOCATION = [-4, 4] as CoordsPair;
 

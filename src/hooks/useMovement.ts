@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { moveBlockByOne } from "../utils/block/block";
 import { CoordsPair } from "../types/globalTypes";
+import { INITIAL_INTERVAL } from "../config/initialSettings";
 
 interface useMovementProps {
   onKeyDown: React.Dispatch<React.SetStateAction<CoordsPair>>;
@@ -51,7 +52,7 @@ export default function useMovement({
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setFallInterval(500);
+          setFallInterval(INITIAL_INTERVAL);
         }
       }
 
