@@ -4,8 +4,14 @@ import {
   type RenderableBlockList,
   NUM_ROTATIONS,
   BlockName,
+  translateVector,
 } from "./block/block";
 import { BlockVectors, Vector } from "../types/globalTypes";
+
+function findBlockCenter(blockMatrixWidth: number) {
+  const halfWidth = Math.floor(blockMatrixWidth / 2);
+  return [halfWidth, halfWidth] as Vector;
+}
 
 function rotateClockwise(blockVectors: BlockVectors) {
   const inputVectors = [...blockVectors.map((row) => [...row])];
@@ -26,14 +32,24 @@ function getBlockRotations(blockVectors: Vector[]) {
   return AllRotations;
 }
 
-function extractSparseRotations(blockShape: BlockDefinition) {
+function extractVectors(blockShape: BlockDefinition) {
   const inputShape = [...blockShape.map((row) => [...row])];
   const blockVectors: Vector[] = [];
+
+  const blockMatrixCenter = findBlockCenter(inputShape.length);
+  const offsetFromCenter: Vector = [
+    0 - blockMatrixCenter[0],
+    0 - blockMatrixCenter[1],
+  ];
 
   inputShape.map((row, rowIdx) =>
     row.map((column, colIdx) => {
       if (column) {
-        blockVectors.push([rowIdx, colIdx]);
+        const normalizedVector = translateVector(
+          [rowIdx, colIdx],
+          offsetFromCenter
+        );
+        blockVectors.push(normalizedVector);
       }
     })
   );
@@ -43,7 +59,7 @@ function extractSparseRotations(blockShape: BlockDefinition) {
 
 function getBlockRotationList(blockShape: BlockDefinition) {
   const inputShape = [...blockShape.map((row) => [...row])];
-  const blockVectors: BlockVectors = extractSparseRotations(inputShape);
+  const blockVectors: BlockVectors = extractVectors(inputShape);
   const rotations = getBlockRotations(blockVectors);
 
   return rotations;

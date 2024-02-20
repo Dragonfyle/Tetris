@@ -6,11 +6,11 @@ import {
   translateBlockPosition,
 } from "../utils/block/block";
 import { isRotationPossible } from "../components/GameBoard/GameBoard.utils";
-import { Vector, GameBoardMatrix } from "../types/globalTypes";
+import { Vector, BinaryMatrix } from "../types/globalTypes";
 
 interface useRotateProps {
   activeBlock: RenderableBlockDefinition;
-  staticBlocksMatrix: GameBoardMatrix;
+  staticBlocksMatrix: BinaryMatrix;
   hookLocation: Vector;
 }
 
@@ -34,11 +34,11 @@ export default function useRotate({
 
   const translatedRotations = {
     clockwise: translateBlockPosition({
-      coords: nextRotations.clockwise,
+      BlockVectors: nextRotations.clockwise,
       offset: hookLocation,
     }),
     counterclockwise: translateBlockPosition({
-      coords: nextRotations.counterclockwise,
+      BlockVectors: nextRotations.counterclockwise,
       offset: hookLocation,
     }),
   };
