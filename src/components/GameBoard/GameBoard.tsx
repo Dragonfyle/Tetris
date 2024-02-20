@@ -37,7 +37,7 @@ export default function GameBoard() {
   const currentRotation = activeBlock.rotations[activeRotation];
 
   const blockPosition = translateBlockPosition({
-    coords: currentRotation,
+    BlockVectors: currentRotation,
     offset: hookLocation,
   }) as BlockVectors;
 

@@ -1,12 +1,12 @@
-import { BlockVectors } from "../../types/globalTypes";
 import {
-  MoveDirection,
-  SquareCoords,
-  GameBoardMatrix,
+  BinaryElement,
+  BinaryRow,
+  BlockVectors,
 } from "../../types/globalTypes";
+import { MoveDirection, Vector, BinaryMatrix } from "../../types/globalTypes";
 import { BOARD_EDGE } from "../../config/board";
 
-function isOnBoard([y, x]: SquareCoords) {
+function isOnBoard([y, x]: Vector) {
   return (
     y > BOARD_EDGE.TOP &&
     y <= BOARD_EDGE.BOTTOM &&
@@ -17,8 +17,8 @@ function isOnBoard([y, x]: SquareCoords) {
 
 function getAdjacentPosition(
   direction: MoveDirection,
-  staticBlocksMatrix: GameBoardMatrix,
-  [y, x]: SquareCoords
+  staticBlocksMatrix: BinaryMatrix,
+  [y, x]: Vector
 ) {
   switch (direction) {
     case "left":
@@ -33,7 +33,7 @@ function getAdjacentPosition(
 function isPositionOccupied(
   direction: MoveDirection,
   blockPosition: BlockVectors,
-  staticBlocksMatrix: GameBoardMatrix
+  staticBlocksMatrix: BinaryMatrix
 ) {
   return blockPosition.some(([y, x]) => {
     if (
@@ -58,15 +58,15 @@ function isBoardEdge(direction: MoveDirection, blockPosition: BlockVectors) {
 
 function isRotationPossible(
   intendedBlockPosition: BlockVectors,
-  staticBlocksMatrix: GameBoardMatrix
+  staticBlocksMatrix: BinaryMatrix
 ) {
   return intendedBlockPosition.every(
     ([y, x]) => isOnBoard([y, x]) && !staticBlocksMatrix[y][x]
   );
 }
 
-function pruneRow(row: boolean[]) {
-  if (!row.every((column: boolean) => column)) {
+function pruneRow(row: BinaryRow) {
+  if (!row.every((column: BinaryElement) => column)) {
     return row;
   } else {
     return null;
@@ -74,7 +74,7 @@ function pruneRow(row: boolean[]) {
 }
 
 function createReadyToRender(
-  staticBlocksMatrix: GameBoardMatrix,
+  staticBlocksMatrix: BinaryMatrix,
   blockPosition: BlockVectors
 ) {
   const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));

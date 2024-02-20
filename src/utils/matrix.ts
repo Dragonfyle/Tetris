@@ -1,6 +1,6 @@
-import { GameBoardMatrix } from "../types/globalTypes";
+import { BinaryMatrix } from "../types/globalTypes";
 
-function createMatrix(width: number, height: number): GameBoardMatrix {
+function createMatrix(width: number, height: number): BinaryMatrix {
   return Array(width * height)
     .fill(false, 0, width * height)
     .reduce(
@@ -22,7 +22,8 @@ function createMatrix(width: number, height: number): GameBoardMatrix {
 }
 
 function createRow(width: number) {
-  return Array(width).fill(Boolean);
+  console.log(Array(width).fill(0));
+  return Array(width).fill(0);
 }
 
 export { createMatrix, createRow };

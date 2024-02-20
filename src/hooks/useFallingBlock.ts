@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BlockVectors, Vector } from "../types/globalTypes";
+import { BinaryMatrix, BlockVectors, Vector } from "../types/globalTypes";
 import getRenderableBlock from "../utils/getRandomBlock";
 import {
   RenderableBlockDefinition,
@@ -15,8 +15,8 @@ interface FallingBlockProps {
     React.SetStateAction<RenderableBlockDefinition>
   >;
   setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
-  staticBlocksMatrix: Array<boolean[]>;
-  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<Array<boolean[]>>>;
+  staticBlocksMatrix: BinaryMatrix;
+  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
   isBlockedDown: boolean;
   fallInterval: number;
 }

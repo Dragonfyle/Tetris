@@ -30,7 +30,7 @@ type RenderableBlockList = MappedKeysAndValues<
 >;
 
 interface TranslateBlockPosition {
-  coords: BlockVectors;
+  BlockVectors: BlockVectors;
   offset: Vector;
 }
 
@@ -45,11 +45,17 @@ const NUM_ROTATIONS = 4;
 
 const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
 
+function translateVector(vector: Vector, offset: Vector) {
+  const [vectorY, vectorX] = vector;
+  const [offsetY, offsetX] = offset;
+  return [vectorY + offsetY, vectorX + offsetX] as Vector;
+}
+
 function translateBlockPosition({
-  coords,
-  offset: [offsetY, offsetX],
+  BlockVectors,
+  offset,
 }: TranslateBlockPosition): BlockVectors {
-  return coords.map(([y, x]) => [y + offsetY, x + offsetX]);
+  return BlockVectors.map((vector) => translateVector(vector, offset));
 }
 
 const moveHookByOne: MoveBlockByOne = (callback, direction) => {
@@ -96,6 +102,7 @@ export {
   renderableBlockList,
   moveHookByOne as moveBlockByOne,
   getNextRotation,
+  translateVector,
   translateBlockPosition,
   INITIAL_ROTATION_IDX,
   NUM_ROTATIONS,

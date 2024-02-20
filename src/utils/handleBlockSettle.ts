@@ -1,18 +1,18 @@
 import { BlockVectors } from "../types/globalTypes";
-import { GameBoardMatrix } from "../types/globalTypes";
+import { BinaryElement, BinaryMatrix } from "../types/globalTypes";
 import { createRow } from "./matrix";
 import { pruneRow } from "../components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "../config/board";
 
 interface HandleBlockSettle {
   blockPosition: BlockVectors;
-  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<GameBoardMatrix>>;
+  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
 }
 
 function solidifyBlock(
-  matrix: GameBoardMatrix,
+  matrix: BinaryMatrix,
   blockPosition: BlockVectors
-): GameBoardMatrix {
+): BinaryMatrix {
   const newMatrix = JSON.parse(JSON.stringify(matrix));
   blockPosition.map(([y, x]) => {
     newMatrix[y][x] = true;
@@ -27,7 +27,7 @@ function handleBlockSettle({
 }: HandleBlockSettle) {
   setStaticBlocksMatrix((prev) => {
     const newStaticMatrix = solidifyBlock(prev, blockPosition).reduce(
-      (acc: GameBoardMatrix, row: boolean[]) => {
+      (acc: BinaryMatrix, row: BinaryElement[]) => {
         const currentRow = pruneRow(row);
 
         if (currentRow) {
