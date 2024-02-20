@@ -1,29 +1,52 @@
 import { useState } from "react";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
 import { BOARD_DIMENSIONS } from "../../config/board";
-import { INITIAL_INTERVAL } from "../../config/initialSettings";
+import { INITIAL_INTERVAL, SPAWN_LOCATION } from "../../config/initialSettings";
 import {
-  createMatrix,
   isBoardEdge,
   isPositionOccupied,
   createReadyToRender,
 } from "./GameBoard.utils";
-import useKeyboardControls from "../../hooks/useKeyboardControls";
+import { createMatrix } from "../../utils/matrix";
+import useMovement from "../../hooks/useMovement";
 import useFallingBlock from "../../hooks/useFallingBlock";
-import getRandomBlock from "../../utils/getRandomBlock";
+import getRenderableBlock from "../../utils/getRandomBlock";
+import {
+  renderableBlockList,
+  translateBlockPosition,
+} from "../../utils/block/block";
+import { BlockCoords } from "../../types/globalTypes";
+import useRotate from "../../hooks/useRotate";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
-  const [blockPosition, setBlockPosition] = useState(getRandomBlock());
+  const [activeBlock, setActiveBlock] = useState(
+    getRenderableBlock(renderableBlockList)
+  );
+  const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
   const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
+
+  const [activeRotation] = useRotate({
+    activeBlock,
+    staticBlocksMatrix,
+    hookLocation,
+  });
+
+  const currentRotation = activeBlock.rotations[activeRotation];
+
+  const blockPosition = translateBlockPosition({
+    coords: currentRotation,
+    offset: hookLocation,
+  }) as BlockCoords;
 
   const isSquareOccupied = {
     left: isPositionOccupied("left", blockPosition, staticBlocksMatrix),
     right: isPositionOccupied("right", blockPosition, staticBlocksMatrix),
     down: isPositionOccupied("down", blockPosition, staticBlocksMatrix),
   };
+
   const isBlocked = {
     left: isSquareOccupied.left || isBoardEdge("left", blockPosition),
     right: isSquareOccupied.right || isBoardEdge("right", blockPosition),
@@ -32,14 +55,15 @@ export default function GameBoard() {
 
   useFallingBlock({
     blockPosition,
-    setBlockPosition,
+    setActiveBlock,
+    setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     isBlockedDown: isBlocked.down,
     fallInterval,
   });
-  useKeyboardControls({
-    onKeyDown: setBlockPosition,
+  useMovement({
+    onKeyDown: setHookLocation,
     setFallInterval,
     isBlockedLeft: isBlocked.left,
     isBlockedRight: isBlocked.right,

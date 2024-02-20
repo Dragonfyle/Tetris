@@ -1,19 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
-import { BlockCoords, translateBlockPosition } from "../utils/block/block";
+import { moveBlockByOne } from "../utils/block/block";
+import { CoordsPair } from "../types/globalTypes";
+import { INITIAL_INTERVAL } from "../config/initialSettings";
 
-interface KeyboardControlsProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<BlockCoords>>;
+interface useMovementProps {
+  onKeyDown: React.Dispatch<React.SetStateAction<CoordsPair>>;
   setFallInterval: React.Dispatch<React.SetStateAction<number>>;
   isBlockedLeft: boolean;
   isBlockedRight: boolean;
 }
 
-export default function useKeyboardControls({
+export default function useMovement({
   onKeyDown,
   setFallInterval,
   isBlockedLeft,
   isBlockedRight,
-}: KeyboardControlsProps) {
+}: useMovementProps) {
   const [isDown, setIsDown] = useState(false);
 
   const keyboardListener = useCallback(
@@ -23,14 +25,13 @@ export default function useKeyboardControls({
         ARROW_LEFT: "ArrowLeft",
         ARROW_RIGHT: "ArrowRight",
       };
-
-      const isKeySupported = Object.keys(supportedKeys).includes(e.key);
+      const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleLeft() {
         if (isBlockedLeft) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => translateBlockPosition(prev, "left"));
+          moveBlockByOne(onKeyDown, "left");
         }
       }
 
@@ -38,7 +39,7 @@ export default function useKeyboardControls({
         if (isBlockedRight) return;
 
         if (e.type === "keydown") {
-          onKeyDown((prev) => translateBlockPosition(prev, "right"));
+          moveBlockByOne(onKeyDown, "right");
         }
       }
 
@@ -51,7 +52,7 @@ export default function useKeyboardControls({
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setFallInterval(500);
+          setFallInterval(INITIAL_INTERVAL);
         }
       }
 

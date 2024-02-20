@@ -1,98 +1,99 @@
-import { MoveDirection } from "../../types/globalTypes";
-import { SPAWN_LOCATION } from "../../config/initialSettings";
+import { BLOCK_DEFINITIONS } from "../../data/blockData";
+import {
+  MoveDirection,
+  BlockCoords,
+  CoordsPair,
+} from "../../types/globalTypes";
+import { transformDefinitions } from "../transformDefinitions";
 
-export type BlockList = typeof blockList;
+type BlockShape = (0 | 1)[][];
 
-export type BlockCoords = typeof blockList.I.coordList;
+type PrimitiveBlockDefinitions = typeof BLOCK_DEFINITIONS;
 
-export type Block = keyof typeof blockList;
+type BlockName = keyof PrimitiveBlockDefinitions;
 
-export const blockList = Object.freeze({
-  I: {
-    coordList: [
-      //the first element is a spawner hook - it will be used to position the block on the board when it spawns
-      [0, 0],
-      [-1, 0],
-      [-2, 0],
-      [-3, 0],
-    ],
-  },
-  L: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-2, 0],
-      [0, 1],
-    ],
-  },
-  J: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-2, 0],
-      [0, -1],
-    ],
-  },
-  S: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [1, -1],
-      [0, -1],
-    ],
-  },
-  Z: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-1, -1],
-      [0, 1],
-    ],
-  },
-  T: {
-    coordList: [
-      [0, 0],
-      [-1, 0],
-      [-1, -1],
-      [-1, 1],
-    ],
-  },
-  O: {
-    coordList: [
-      [0, 0],
-      [0, 1],
-      [-1, 0],
-      [-1, 1],
-    ],
-  },
-});
+type RotationsList = BlockCoords[];
 
-const SPAWN_HOOK_IDX = 0;
+type RotationIdx = 0 | 1 | 2 | 3;
 
-const [spawnLocationY, spawnLocationX] = SPAWN_LOCATION;
+type RenderableBlockDefinition = {
+  rotations: RotationsList;
+  spawnHook: CoordsPair;
+};
 
-export function translateCoordsToSpawnPos(coords: BlockCoords) {
-  const [spawnHookY, spawnHookX] = coords[SPAWN_HOOK_IDX];
-  const [translationY, translationX] = [
-    spawnLocationY - spawnHookY,
-    spawnLocationX - spawnHookX,
-  ];
+type RotationDirection = "clockwise" | "counterclockwise";
 
-  return coords.map(([y, x]) => {
-    return [y + translationY, x + translationX];
-  });
+type RenderableBlockList = { [key: string]: RenderableBlockDefinition };
+
+interface TranslateBlockPosition {
+  coords: BlockCoords;
+  offset: CoordsPair;
 }
 
-export function translateBlockPosition(
-  coords: BlockCoords,
+type MoveBlockByOne = (
+  callback: React.Dispatch<React.SetStateAction<CoordsPair>>,
   direction: MoveDirection
-) {
+) => void;
+
+const INITIAL_ROTATION_IDX = 0;
+
+const NUM_ROTATIONS = 4;
+
+const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
+
+function translateBlockPosition({
+  coords,
+  offset: [offsetY, offsetX],
+}: TranslateBlockPosition): BlockCoords {
+  return coords.map(([y, x]) => [y + offsetY, x + offsetX]);
+}
+
+const moveHookByOne: MoveBlockByOne = (callback, direction) => {
   switch (direction) {
     case "down":
-      return coords.map(([y, x]) => [y + 1, x]);
+      callback(([y, x]) => [y + 1, x]);
+      break;
     case "left":
-      return coords.map(([y, x]) => [y, x - 1]);
+      callback(([y, x]) => [y, x - 1]);
+      break;
     case "right":
-      return coords.map(([y, x]) => [y, x + 1]);
+      callback(([y, x]) => [y, x + 1]);
+      break;
+    default:
+      callback(([y, x]) => [y, x]);
+      break;
+  }
+};
+
+function getNextRotation(
+  direction: RotationDirection,
+  currentRotationIndex: RotationIdx
+): RotationIdx {
+  switch (direction) {
+    case "clockwise":
+      return ((currentRotationIndex + 1) % NUM_ROTATIONS) as RotationIdx;
+    case "counterclockwise":
+      return ((currentRotationIndex - 1 + NUM_ROTATIONS) %
+        NUM_ROTATIONS) as RotationIdx;
   }
 }
+
+export type {
+  BlockShape,
+  BlockName,
+  RenderableBlockList,
+  RenderableBlockDefinition,
+  PrimitiveBlockDefinitions,
+  RotationsList,
+  RotationIdx,
+  RotationDirection,
+};
+
+export {
+  renderableBlockList,
+  moveHookByOne as moveBlockByOne,
+  getNextRotation,
+  translateBlockPosition,
+  INITIAL_ROTATION_IDX,
+  NUM_ROTATIONS,
+};
