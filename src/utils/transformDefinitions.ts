@@ -1,67 +1,64 @@
 import {
-  type PrimitiveBlockDefinitions,
-  type BlockShape,
+  type BlockDefinitions,
+  type BlockDefinition,
   type RenderableBlockList,
-  type RotationsList,
   NUM_ROTATIONS,
+  BlockName,
 } from "./block/block";
-import { CoordsPair } from "../types/globalTypes";
+import { BlockVectors, Vector } from "../types/globalTypes";
 
-function rotateClockwise(blockShape: BlockShape) {
-  const inputShape = [...blockShape.map((row) => [...row])];
+function rotateClockwise(blockVectors: BlockVectors) {
+  const inputVectors = [...blockVectors.map((row) => [...row])];
 
-  return inputShape[0].map((_, idx) =>
-    inputShape.map((column) => column[idx]).reverse()
-  );
+  return inputVectors.map(([y, x]) => [-x, y] as Vector);
 }
 
-function getMatrixRotations(blockShape: BlockShape) {
-  const inputShape = [...blockShape.map((row) => [...row])];
-  const AllRotations: BlockShape[] = [inputShape];
+function getBlockRotations(blockVectors: Vector[]) {
+  const inputVectors = [...blockVectors.map((vector) => [...vector] as Vector)];
+  const AllRotations: BlockVectors[] = [inputVectors];
 
   for (let i = 1; i < NUM_ROTATIONS; i++) {
-    AllRotations.push(rotateClockwise(AllRotations[i - 1]));
+    const previousRotation = i - 1;
+
+    AllRotations.push(rotateClockwise(AllRotations[previousRotation]));
   }
 
   return AllRotations;
 }
 
-function extractSparseRotations(blockShapes: BlockShape[]) {
-  const blockCoords: CoordsPair[][] = [];
-
-  blockShapes.forEach((blockShape) => {
-    const sparseBlockRotations: CoordsPair[] = [];
-
-    blockShape.map((row, rowIdx) =>
-      row.map((column, colIdx) => {
-        if (column) {
-          sparseBlockRotations.push([rowIdx, colIdx]);
-        }
-      })
-    );
-    blockCoords.push(sparseBlockRotations);
-  });
-
-  return blockCoords;
-}
-
-function getBlockRotationList(blockShape: BlockShape) {
+function extractSparseRotations(blockShape: BlockDefinition) {
   const inputShape = [...blockShape.map((row) => [...row])];
-  const rotations = getMatrixRotations(inputShape);
-  const coordsList: RotationsList = extractSparseRotations(rotations);
+  const blockVectors: Vector[] = [];
 
-  return coordsList;
+  inputShape.map((row, rowIdx) =>
+    row.map((column, colIdx) => {
+      if (column) {
+        blockVectors.push([rowIdx, colIdx]);
+      }
+    })
+  );
+
+  return blockVectors;
 }
 
-function transformDefinitions(blockDefinitions: PrimitiveBlockDefinitions) {
+function getBlockRotationList(blockShape: BlockDefinition) {
+  const inputShape = [...blockShape.map((row) => [...row])];
+  const blockVectors: BlockVectors = extractSparseRotations(inputShape);
+  const rotations = getBlockRotations(blockVectors);
+
+  return rotations;
+}
+
+function transformDefinitions(blockDefinitions: BlockDefinitions) {
   const renderableBlockDefinitions = {} as RenderableBlockList;
 
   Object.entries(blockDefinitions).forEach(([key, value]) => {
-    renderableBlockDefinitions[key] = {
+    renderableBlockDefinitions[key as BlockName] = {
       rotations: getBlockRotationList(value.SHAPE),
-      spawnHook: value.SPAWN_HOOK as CoordsPair,
+      spawnHook: value.SPAWN_HOOK as Vector,
     };
   });
+
   return renderableBlockDefinitions;
 }
 

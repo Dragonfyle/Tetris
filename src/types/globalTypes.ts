@@ -1,17 +1,20 @@
-type SquareCoords = [y: number, x: number];
+type KeyOfType<T> = keyof T;
+type MappedKeysAndValues<K extends string, V> = {
+  [key in K]: V;
+};
 
-type CoordsPair = [number, number];
-
-type BlockCoords = CoordsPair[];
-
+type Vector = [number, number];
+type BlockVectors = Vector[];
 type GameBoardMatrix = boolean[][];
-
 type MoveDirection = "down" | "left" | "right";
+type RotationDirection = "clockwise" | "counterclockwise";
 
 export type {
-  SquareCoords,
-  CoordsPair,
-  BlockCoords,
+  KeyOfType,
+  MappedKeysAndValues,
+  Vector,
+  BlockVectors,
   GameBoardMatrix,
   MoveDirection,
+  RotationDirection,
 };

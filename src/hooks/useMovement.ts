@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { moveBlockByOne } from "../utils/block/block";
-import { CoordsPair } from "../types/globalTypes";
+import { Vector } from "../types/globalTypes";
 import { INITIAL_INTERVAL } from "../config/initialSettings";
 
 interface useMovementProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<CoordsPair>>;
+  onKeyDown: React.Dispatch<React.SetStateAction<Vector>>;
   setFallInterval: React.Dispatch<React.SetStateAction<number>>;
   isBlockedLeft: boolean;
   isBlockedRight: boolean;

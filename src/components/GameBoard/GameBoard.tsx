@@ -15,7 +15,7 @@ import {
   renderableBlockList,
   translateBlockPosition,
 } from "../../utils/block/block";
-import { BlockCoords } from "../../types/globalTypes";
+import { BlockVectors } from "../../types/globalTypes";
 import useRotate from "../../hooks/useRotate";
 
 export default function GameBoard() {
@@ -39,7 +39,7 @@ export default function GameBoard() {
   const blockPosition = translateBlockPosition({
     coords: currentRotation,
     offset: hookLocation,
-  }) as BlockCoords;
+  }) as BlockVectors;
 
   const isSquareOccupied = {
     left: isPositionOccupied("left", blockPosition, staticBlocksMatrix),

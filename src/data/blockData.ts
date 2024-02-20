@@ -1,4 +1,5 @@
-import { BlockShape } from "../utils/block/block";
+import { Vector } from "../types/globalTypes";
+import { BlockDefinition } from "../utils/block/block";
 
 const BLOCK_DEFINITIONS = {
   I: {
@@ -8,55 +9,55 @@ const BLOCK_DEFINITIONS = {
       [0, 0, 1, 0],
       [0, 0, 1, 0],
       [0, 0, 1, 0],
-    ] as BlockShape,
-    SPAWN_HOOK: [2, 2],
+    ] as BlockDefinition,
+    SPAWN_HOOK: [2, 2] as Vector,
   },
   L: {
     SHAPE: [
       [0, 1, 0],
       [0, 1, 0],
       [0, 1, 1],
-    ] as BlockShape,
-    SPAWN_HOOK: [2, 1],
+    ] as BlockDefinition,
+    SPAWN_HOOK: [2, 1] as Vector,
   },
   J: {
     SHAPE: [
       [0, 1, 0],
       [0, 1, 0],
       [1, 1, 0],
-    ] as BlockShape,
-    SPAWN_HOOK: [2, 1],
+    ] as BlockDefinition,
+    SPAWN_HOOK: [2, 1] as Vector,
   },
   S: {
     SHAPE: [
       [0, 0, 0],
       [0, 1, 1],
       [1, 1, 0],
-    ] as BlockShape,
-    SPAWN_HOOK: [2, 1],
+    ] as BlockDefinition,
+    SPAWN_HOOK: [2, 1] as Vector,
   },
   Z: {
     SHAPE: [
       [0, 0, 0],
       [1, 1, 0],
       [0, 1, 1],
-    ] as BlockShape,
-    SPAWN_HOOK: [2, 1],
+    ] as BlockDefinition,
+    SPAWN_HOOK: [2, 1] as Vector,
   },
   T: {
     SHAPE: [
       [0, 0, 0],
       [0, 1, 0],
       [1, 1, 1],
-    ] as BlockShape,
-    SPAWN_HOOK: [2, 1],
+    ] as BlockDefinition,
+    SPAWN_HOOK: [2, 1] as Vector,
   },
   O: {
     SHAPE: [
       [1, 1],
       [1, 1],
-    ] as BlockShape,
-    SPAWN_HOOK: [2, 1],
+    ] as BlockDefinition,
+    SPAWN_HOOK: [2, 1] as Vector,
   },
 };
 

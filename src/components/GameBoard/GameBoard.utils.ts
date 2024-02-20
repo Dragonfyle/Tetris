@@ -1,4 +1,4 @@
-import { BlockCoords } from "../../types/globalTypes";
+import { BlockVectors } from "../../types/globalTypes";
 import {
   MoveDirection,
   SquareCoords,
@@ -32,7 +32,7 @@ function getAdjacentPosition(
 
 function isPositionOccupied(
   direction: MoveDirection,
-  blockPosition: BlockCoords,
+  blockPosition: BlockVectors,
   staticBlocksMatrix: GameBoardMatrix
 ) {
   return blockPosition.some(([y, x]) => {
@@ -45,7 +45,7 @@ function isPositionOccupied(
   });
 }
 
-function isBoardEdge(direction: MoveDirection, blockPosition: BlockCoords) {
+function isBoardEdge(direction: MoveDirection, blockPosition: BlockVectors) {
   switch (direction) {
     case "left":
       return blockPosition.some(([, x]) => x === BOARD_EDGE.LEFT);
@@ -57,7 +57,7 @@ function isBoardEdge(direction: MoveDirection, blockPosition: BlockCoords) {
 }
 
 function isRotationPossible(
-  intendedBlockPosition: BlockCoords,
+  intendedBlockPosition: BlockVectors,
   staticBlocksMatrix: GameBoardMatrix
 ) {
   return intendedBlockPosition.every(
@@ -75,7 +75,7 @@ function pruneRow(row: boolean[]) {
 
 function createReadyToRender(
   staticBlocksMatrix: GameBoardMatrix,
-  blockPosition: BlockCoords
+  blockPosition: BlockVectors
 ) {
   const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));
   blockPosition.map(([y, x]) => {

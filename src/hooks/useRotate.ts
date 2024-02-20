@@ -6,12 +6,12 @@ import {
   translateBlockPosition,
 } from "../utils/block/block";
 import { isRotationPossible } from "../components/GameBoard/GameBoard.utils";
-import { CoordsPair, GameBoardMatrix } from "../types/globalTypes";
+import { Vector, GameBoardMatrix } from "../types/globalTypes";
 
 interface useRotateProps {
   activeBlock: RenderableBlockDefinition;
   staticBlocksMatrix: GameBoardMatrix;
-  hookLocation: CoordsPair;
+  hookLocation: Vector;
 }
 
 export default function useRotate({

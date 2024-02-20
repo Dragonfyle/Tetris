@@ -1,17 +1,17 @@
-import { BlockCoords } from "../types/globalTypes";
+import { BlockVectors } from "../types/globalTypes";
 import { GameBoardMatrix } from "../types/globalTypes";
 import { createRow } from "./matrix";
 import { pruneRow } from "../components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "../config/board";
 
 interface HandleBlockSettle {
-  blockPosition: BlockCoords;
+  blockPosition: BlockVectors;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<GameBoardMatrix>>;
 }
 
 function solidifyBlock(
   matrix: GameBoardMatrix,
-  blockPosition: BlockCoords
+  blockPosition: BlockVectors
 ): GameBoardMatrix {
   const newMatrix = JSON.parse(JSON.stringify(matrix));
   blockPosition.map(([y, x]) => {
