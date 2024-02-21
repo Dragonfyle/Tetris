@@ -1,8 +1,8 @@
-import { BlockVectors } from "../types/globalTypes";
-import { BinaryElement, BinaryMatrix } from "../types/globalTypes";
+import { BlockVectors } from "$types/globalTypes";
+import { BinaryElement, BinaryMatrix } from "$types/globalTypes";
 import { createRow } from "./matrix";
-import { pruneRow } from "../components/GameBoard/GameBoard.utils";
-import { BOARD_DIMENSIONS } from "../config/board";
+import { pruneRow } from "$components/GameBoard/GameBoard.utils";
+import { BOARD_DIMENSIONS } from "$config/board";
 
 interface HandleBlockSettle {
   blockPosition: BlockVectors;

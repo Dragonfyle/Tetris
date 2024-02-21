@@ -1,6 +1,6 @@
 // import * as P from "./RightUI.parts";
-import UI from "../UI/UI";
+import UI from "$components/UI/UI";
 
 export default function RightUI() {
-  return <UI justify={"flex-end"} />;
+  return <UI justify="flex-end" />;
 }

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { moveBlockByOne } from "../utils/block/block";
-import { Vector } from "../types/globalTypes";
-import { INITIAL_INTERVAL } from "../config/initialSettings";
+import { moveBlockByOne } from "$utils/block/block";
+import { Vector } from "$types/globalTypes";
+import { INITIAL_INTERVAL } from "$config/initialSettings";
 
 interface useMovementProps {
   onKeyDown: React.Dispatch<React.SetStateAction<Vector>>;

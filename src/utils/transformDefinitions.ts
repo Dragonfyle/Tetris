@@ -6,7 +6,7 @@ import {
   BlockName,
   translateVector,
 } from "./block/block";
-import { BlockVectors, Vector } from "../types/globalTypes";
+import { BlockVectors, Vector } from "$types/globalTypes";
 
 function findBlockCenter(blockMatrixWidth: number) {
   const halfWidth = Math.floor(blockMatrixWidth / 2);
