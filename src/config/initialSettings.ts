@@ -1,4 +1,4 @@
-import { Vector } from "$types/globalTypes";
+import { Vector } from "$types/typeCollection";
 
 const INITIAL_INTERVAL = 100;
 

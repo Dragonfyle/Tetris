@@ -10,6 +10,7 @@ type Vector = [number, number];
 type BlockVectors = Vector[];
 type MoveDirection = "down" | "left" | "right";
 type RotationDirection = "clockwise" | "counterclockwise";
+type RotationIdx = 0 | 1 | 2 | 3;
 
 export type {
   BinaryElement,
@@ -21,4 +22,5 @@ export type {
   BlockVectors,
   MoveDirection,
   RotationDirection,
+  RotationIdx,
 };

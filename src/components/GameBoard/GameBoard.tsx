@@ -15,7 +15,7 @@ import {
   renderableBlockList,
   translateBlockPosition,
 } from "$utils/block/block";
-import { BlockVectors } from "$types/globalTypes";
+import { BlockVectors } from "$types/typeCollection";
 import useRotate from "$hooks/useRotate";
 
 export default function GameBoard() {

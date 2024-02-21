@@ -1,12 +1,12 @@
+import { NUM_ROTATIONS, translateVector } from "./block/block";
 import {
-  type BlockDefinitions,
-  type BlockDefinition,
-  type RenderableBlockList,
-  NUM_ROTATIONS,
+  BlockVectors,
+  Vector,
+  BlockDefinition,
+  BlockDefinitions,
+  RenderableBlockList,
   BlockName,
-  translateVector,
-} from "./block/block";
-import { BlockVectors, Vector } from "$types/globalTypes";
+} from "$types/typeCollection";
 
 function findBlockCenter(blockMatrixWidth: number) {
   const halfWidth = Math.floor(blockMatrixWidth / 2);
