@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
-import { BOARD_DIMENSIONS } from "../../config/board";
-import { INITIAL_INTERVAL, SPAWN_LOCATION } from "../../config/initialSettings";
+import { BOARD_DIMENSIONS } from "$config/board";
+import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
 import {
   isBoardEdge,
   isPositionOccupied,
   createReadyToRender,
 } from "./GameBoard.utils";
-import { createMatrix } from "../../utils/matrix";
-import useMovement from "../../hooks/useMovement";
-import useFallingBlock from "../../hooks/useFallingBlock";
-import getRenderableBlock from "../../utils/getRandomBlock";
+import { createMatrix } from "$utils/matrix";
+import useMovement from "$hooks/useMovement";
+import useFallingBlock from "$hooks/useFallingBlock";
+import getRenderableBlock from "$utils/getRandomBlock";
 import {
   renderableBlockList,
   translateBlockPosition,
-} from "../../utils/block/block";
-import { BlockVectors } from "../../types/globalTypes";
-import useRotate from "../../hooks/useRotate";
+} from "$utils/block/block";
+import { BlockVectors } from "$types/globalTypes";
+import useRotate from "$hooks/useRotate";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(

@@ -1,5 +1,5 @@
-import { GlobalStyles } from "./styles/GlobalStyles";
-import MainCanvas from "./components/MainCanvas/MainCanvas";
+import { GlobalStyles } from "$styles/GlobalStyles";
+import MainCanvas from "$components/MainCanvas/MainCanvas";
 
 function App() {
   return (

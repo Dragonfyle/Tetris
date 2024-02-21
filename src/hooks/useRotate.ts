@@ -4,9 +4,9 @@ import {
   RotationIdx,
   getNextRotation,
   translateBlockPosition,
-} from "../utils/block/block";
-import { isRotationPossible } from "../components/GameBoard/GameBoard.utils";
-import { Vector, BinaryMatrix } from "../types/globalTypes";
+} from "$utils/block/block";
+import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
+import { Vector, BinaryMatrix } from "$types/globalTypes";
 
 interface useRotateProps {
   activeBlock: RenderableBlockDefinition;

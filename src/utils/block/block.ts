@@ -1,4 +1,4 @@
-import { BLOCK_DEFINITIONS } from "../../data/blockData";
+import { BLOCK_DEFINITIONS } from "$data/blockData";
 import {
   KeyOfType,
   MappedKeysAndValues,
@@ -6,8 +6,8 @@ import {
   RotationDirection,
   BlockVectors,
   Vector,
-} from "../../types/globalTypes";
-import { transformDefinitions } from "../transformDefinitions";
+} from "$types/globalTypes";
+import { transformDefinitions } from "$utils/transformDefinitions";
 
 type BlockDefinition = (0 | 1)[][];
 

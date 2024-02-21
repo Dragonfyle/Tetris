@@ -1,6 +1,6 @@
 // import * as P from "./LeftUI.parts";
-import UI from "../UI/UI";
-import Score from "../Score/Score";
+import UI from "$components/UI/UI";
+import Score from "$components/Score/Score";
 
 export default function LeftUI() {
   return (

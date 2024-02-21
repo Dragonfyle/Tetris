@@ -1,13 +1,13 @@
 import { useEffect, useRef, useCallback } from "react";
-import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BinaryMatrix, BlockVectors, Vector } from "../types/globalTypes";
-import getRenderableBlock from "../utils/getRandomBlock";
+import { handleBlockSettle } from "$utils/handleBlockSettle";
+import { BinaryMatrix, BlockVectors, Vector } from "$types/globalTypes";
+import getRenderableBlock from "$utils/getRandomBlock";
 import {
   RenderableBlockDefinition,
   moveBlockByOne as moveHookByOne,
   renderableBlockList,
-} from "../utils/block/block";
-import { SPAWN_LOCATION } from "../config/initialSettings";
+} from "$utils/block/block";
+import { SPAWN_LOCATION } from "$config/initialSettings";
 
 interface FallingBlockProps {
   blockPosition: BlockVectors;
