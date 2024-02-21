@@ -1,5 +1,5 @@
-import { Vector } from "$types/globalTypes";
-import { BlockDefinition } from "$utils/block/block";
+import { Vector } from "$types/typeCollection";
+import { BlockDefinition } from "$types/typeCollection";
 
 const BLOCK_DEFINITIONS = {
   I: {

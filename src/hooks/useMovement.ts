@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { moveBlockByOne } from "$utils/block/block";
-import { Vector } from "$types/globalTypes";
+import { Vector } from "$types/typeCollection";
 import { INITIAL_INTERVAL } from "$config/initialSettings";
 
 interface useMovementProps {

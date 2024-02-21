@@ -1,5 +1,5 @@
-import { BlockVectors } from "$types/globalTypes";
-import { BinaryElement, BinaryMatrix } from "$types/globalTypes";
+import { BlockVectors } from "$types/typeCollection.ts";
+import { BinaryElement, BinaryMatrix } from "$types/typeCollection.ts";
 import { createRow } from "./matrix";
 import { pruneRow } from "$components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "$config/board";

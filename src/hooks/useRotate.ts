@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { getNextRotation, translateBlockPosition } from "$utils/block/block";
+import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
 import {
+  Vector,
+  BinaryMatrix,
   RenderableBlockDefinition,
   RotationIdx,
-  getNextRotation,
-  translateBlockPosition,
-} from "$utils/block/block";
-import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
-import { Vector, BinaryMatrix } from "$types/globalTypes";
+} from "$types/typeCollection";
 
 interface useRotateProps {
   activeBlock: RenderableBlockDefinition;

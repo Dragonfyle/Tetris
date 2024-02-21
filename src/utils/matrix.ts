@@ -1,4 +1,4 @@
-import { BinaryMatrix } from "$types/globalTypes";
+import { BinaryMatrix } from "$types/typeCollection";
 
 function createMatrix(width: number, height: number): BinaryMatrix {
   return Array(width * height)

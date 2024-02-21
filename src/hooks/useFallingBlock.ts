@@ -1,12 +1,13 @@
 import { useEffect, useRef, useCallback } from "react";
 import { handleBlockSettle } from "$utils/handleBlockSettle";
-import { BinaryMatrix, BlockVectors, Vector } from "$types/globalTypes";
-import getRenderableBlock from "$utils/getRandomBlock";
 import {
+  BinaryMatrix,
+  BlockVectors,
+  Vector,
   RenderableBlockDefinition,
-  moveBlockByOne as moveHookByOne,
-  renderableBlockList,
-} from "$utils/block/block";
+} from "$types/typeCollection";
+import getRenderableBlock from "$utils/getRandomBlock";
+import { moveBlockByOne, renderableBlockList } from "$utils/block/block";
 import { SPAWN_LOCATION } from "$config/initialSettings";
 
 interface FallingBlockProps {
@@ -63,7 +64,7 @@ export default function useFallingBlock({
         resetHookLocation();
         spawnBlock();
       } else {
-        moveHookByOne(setHookLocation, "down");
+        moveBlockByOne(setHookLocation, "down");
       }
     }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
 

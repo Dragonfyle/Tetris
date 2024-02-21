@@ -1,43 +1,13 @@
-import { BLOCK_DEFINITIONS } from "$data/blockData";
 import {
-  KeyOfType,
-  MappedKeysAndValues,
-  MoveDirection,
   RotationDirection,
   BlockVectors,
   Vector,
-} from "$types/globalTypes";
+  TranslateBlockPosition,
+  MoveBlockByOne,
+  RotationIdx,
+} from "$types/typeCollection";
+import { BLOCK_DEFINITIONS } from "$data/blockData";
 import { transformDefinitions } from "$utils/transformDefinitions";
-
-type BlockDefinition = (0 | 1)[][];
-
-type BlockDefinitions = typeof BLOCK_DEFINITIONS;
-
-type BlockName = KeyOfType<BlockDefinitions>;
-
-type RotationsList = BlockVectors[];
-
-type RotationIdx = 0 | 1 | 2 | 3;
-
-type RenderableBlockDefinition = {
-  rotations: RotationsList;
-  spawnHook: Vector;
-};
-
-type RenderableBlockList = MappedKeysAndValues<
-  BlockName,
-  RenderableBlockDefinition
->;
-
-interface TranslateBlockPosition {
-  BlockVectors: BlockVectors;
-  offset: Vector;
-}
-
-type MoveBlockByOne = (
-  callback: React.Dispatch<React.SetStateAction<Vector>>,
-  direction: MoveDirection
-) => void;
 
 const INITIAL_ROTATION_IDX = 0;
 
@@ -87,16 +57,6 @@ function getNextRotation(
         NUM_ROTATIONS) as RotationIdx;
   }
 }
-
-export type {
-  BlockDefinition,
-  BlockName,
-  RenderableBlockList,
-  RenderableBlockDefinition,
-  BlockDefinitions,
-  RotationsList,
-  RotationIdx,
-};
 
 export {
   renderableBlockList,

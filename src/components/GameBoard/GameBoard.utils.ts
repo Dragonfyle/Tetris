@@ -1,5 +1,11 @@
-import { BinaryElement, BinaryRow, BlockVectors } from "$types/globalTypes";
-import { MoveDirection, Vector, BinaryMatrix } from "$types/globalTypes";
+import {
+  BinaryElement,
+  BinaryRow,
+  BinaryMatrix,
+  Vector,
+  BlockVectors,
+  MoveDirection,
+} from "$types/typeCollection";
 import { BOARD_EDGE } from "$config/board";
 
 function isOnBoard([y, x]: Vector) {
