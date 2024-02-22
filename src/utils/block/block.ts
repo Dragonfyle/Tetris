@@ -11,7 +11,22 @@ import { transformDefinitions } from "$utils/transformDefinitions";
 
 const INITIAL_ROTATION_IDX = 0;
 
-const NUM_ROTATIONS = 4;
+const ROTATIONS = {
+  MIN_IDX: 0 as RotationIdx,
+  MAX_IDX: 3 as RotationIdx,
+  NUM_ROTATIONS: 4,
+};
+
+const TRANSLATION_VECTORS = {
+  left: [0, -1] as Vector,
+  right: [0, 1] as Vector,
+  down: [1, 0] as Vector,
+};
+
+const ROTATION_TO_IDX_MAP = {
+  clockwise: 1,
+  counterclockwise: -1,
+};
 
 const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
 
@@ -28,33 +43,25 @@ function translateBlockPosition({
   return BlockVectors.map((vector) => translateVector(vector, offset));
 }
 
-const moveHookByOne: MoveBlockByOne = (callback, direction) => {
-  switch (direction) {
-    case "down":
-      callback(([y, x]) => [y + 1, x]);
-      break;
-    case "left":
-      callback(([y, x]) => [y, x - 1]);
-      break;
-    case "right":
-      callback(([y, x]) => [y, x + 1]);
-      break;
-    default:
-      callback(([y, x]) => [y, x]);
-      break;
-  }
+const moveHookByOne: MoveBlockByOne = (setHookLocation, direction) => {
+  const offset = TRANSLATION_VECTORS[direction];
+
+  setHookLocation(([y, x]) => translateVector([y, x], offset));
 };
 
 function getNextRotation(
   direction: RotationDirection,
   currentRotationIndex: RotationIdx
 ): RotationIdx {
-  switch (direction) {
-    case "clockwise":
-      return ((currentRotationIndex + 1) % NUM_ROTATIONS) as RotationIdx;
-    case "counterclockwise":
-      return ((currentRotationIndex - 1 + NUM_ROTATIONS) %
-        NUM_ROTATIONS) as RotationIdx;
+  const newIdx = ((currentRotationIndex + ROTATION_TO_IDX_MAP[direction]) %
+    ROTATIONS.NUM_ROTATIONS) as RotationIdx;
+
+  if (newIdx > ROTATIONS.NUM_ROTATIONS - 1) {
+    return ROTATIONS.MIN_IDX;
+  } else if (newIdx < 0) {
+    return ROTATIONS.MAX_IDX;
+  } else {
+    return newIdx;
   }
 }
 
@@ -65,5 +72,5 @@ export {
   translateVector,
   translateBlockPosition,
   INITIAL_ROTATION_IDX,
-  NUM_ROTATIONS,
+  ROTATIONS,
 };

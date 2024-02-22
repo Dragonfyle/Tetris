@@ -5,7 +5,7 @@ type KeyOfType<T> = keyof T;
 type MappedKeysAndValues<K extends string, V> = {
   [key in K]: V;
 };
-
+type PositionStatuses = { [key in MoveDirection]: boolean };
 type Vector = [number, number];
 type BlockVectors = Vector[];
 type MoveDirection = "down" | "left" | "right";
@@ -23,4 +23,5 @@ export type {
   MoveDirection,
   RotationDirection,
   RotationIdx,
+  PositionStatuses,
 };

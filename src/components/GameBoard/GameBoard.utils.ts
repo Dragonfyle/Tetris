@@ -5,6 +5,7 @@ import {
   Vector,
   BlockVectors,
   MoveDirection,
+  PositionStatuses,
 } from "$types/typeCollection";
 import { BOARD_EDGE } from "$config/board";
 
@@ -90,6 +91,30 @@ function createReadyToRender(
   return readyToRender;
 }
 
+type GetPositionStatus = (
+  directions: MoveDirection[],
+  blockPosition: BlockVectors,
+  staticBlocksMatrix: BinaryMatrix
+) => PositionStatuses;
+
+const getMovePossibilities: GetPositionStatus = (
+  directions,
+  blockPosition,
+  staticBlocksMatrix
+) => {
+  const result = {} as PositionStatuses;
+
+  for (const direction of directions) {
+    const canMove =
+      !isBoardEdge(direction, blockPosition) &&
+      !isPositionOccupied(direction, blockPosition, staticBlocksMatrix);
+
+    result[direction] = canMove;
+  }
+
+  return result;
+};
+
 export {
   isOnBoard,
   getAdjacentPosition,
@@ -98,4 +123,5 @@ export {
   isRotationPossible,
   pruneRow,
   createReadyToRender,
+  getMovePossibilities,
 };

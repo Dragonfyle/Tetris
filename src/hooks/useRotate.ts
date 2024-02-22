@@ -62,12 +62,12 @@ export default function useRotate({
       const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleRotate() {
-        if (!isDown) {
-          setIsDown(true);
-          setActiveRotation((prev) => {
-            return canRotate.clockwise ? nextRotationIdx.clockwise : prev;
-          });
+        // if (!isDown) {
+        setIsDown(true);
+        if (canRotate.clockwise) {
+          setActiveRotation(nextRotationIdx.clockwise);
         }
+        // }
         if (e.type === "keyup") {
           setIsDown(false);
         }
