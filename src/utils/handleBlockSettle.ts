@@ -5,16 +5,17 @@ import { pruneRow } from "$components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "$config/board";
 
 interface HandleBlockSettle {
-  blockPosition: BlockVectors;
+  blockVectors: BlockVectors;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
 }
 
 function solidifyBlock(
   matrix: BinaryMatrix,
-  blockPosition: BlockVectors
+  blockVectors: BlockVectors
 ): BinaryMatrix {
   const newMatrix = JSON.parse(JSON.stringify(matrix));
-  blockPosition.map(([y, x]) => {
+
+  blockVectors.map(([y, x]) => {
     newMatrix[y][x] = true;
   });
 
@@ -22,11 +23,11 @@ function solidifyBlock(
 }
 
 function handleBlockSettle({
-  blockPosition,
+  blockVectors,
   setStaticBlocksMatrix,
 }: HandleBlockSettle) {
   setStaticBlocksMatrix((prev) => {
-    const newStaticMatrix = solidifyBlock(prev, blockPosition).reduce(
+    const newStaticMatrix = solidifyBlock(prev, blockVectors).reduce(
       (acc: BinaryMatrix, row: BinaryElement[]) => {
         const currentRow = pruneRow(row);
 

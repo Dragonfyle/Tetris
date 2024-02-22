@@ -4,17 +4,17 @@ import { Vector } from "$types/typeCollection";
 import { INITIAL_INTERVAL } from "$config/initialSettings";
 
 interface useMovementProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<Vector>>;
+  setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
   setFallInterval: React.Dispatch<React.SetStateAction<number>>;
-  isBlockedLeft: boolean;
-  isBlockedRight: boolean;
+  canMoveLeft: boolean;
+  canMoveRight: boolean;
 }
 
 export default function useMovement({
-  onKeyDown,
+  setHookLocation,
   setFallInterval,
-  isBlockedLeft,
-  isBlockedRight,
+  canMoveLeft,
+  canMoveRight,
 }: useMovementProps) {
   const [isDown, setIsDown] = useState(false);
 
@@ -28,18 +28,14 @@ export default function useMovement({
       const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleLeft() {
-        if (isBlockedLeft) return;
-
-        if (e.type === "keydown") {
-          moveBlockByOne(onKeyDown, "left");
+        if (canMoveLeft && e.type === "keydown") {
+          moveBlockByOne(setHookLocation, "left");
         }
       }
 
       function handleRight() {
-        if (isBlockedRight) return;
-
-        if (e.type === "keydown") {
-          moveBlockByOne(onKeyDown, "right");
+        if (canMoveRight && e.type === "keydown") {
+          moveBlockByOne(setHookLocation, "right");
         }
       }
 
@@ -73,7 +69,7 @@ export default function useMovement({
           break;
       }
     },
-    [onKeyDown, setFallInterval, isDown, isBlockedLeft, isBlockedRight]
+    [setHookLocation, setFallInterval, isDown, canMoveLeft, canMoveRight]
   );
 
   useEffect(() => {

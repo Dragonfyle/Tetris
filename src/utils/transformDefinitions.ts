@@ -1,4 +1,4 @@
-import { NUM_ROTATIONS, translateVector } from "./block/block";
+import { ROTATIONS, translateVector } from "./block/block";
 import {
   BlockVectors,
   Vector,
@@ -23,7 +23,7 @@ function getBlockRotations(blockVectors: Vector[]) {
   const inputVectors = [...blockVectors.map((vector) => [...vector] as Vector)];
   const AllRotations: BlockVectors[] = [inputVectors];
 
-  for (let i = 1; i < NUM_ROTATIONS; i++) {
+  for (let i = 1; i < ROTATIONS.NUM_ROTATIONS; i++) {
     const previousRotation = i - 1;
 
     AllRotations.push(rotateClockwise(AllRotations[previousRotation]));

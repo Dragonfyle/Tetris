@@ -11,31 +11,30 @@ import { moveBlockByOne, renderableBlockList } from "$utils/block/block";
 import { SPAWN_LOCATION } from "$config/initialSettings";
 
 interface FallingBlockProps {
-  blockPosition: BlockVectors;
+  blockVectors: BlockVectors;
   setActiveBlock: React.Dispatch<
     React.SetStateAction<RenderableBlockDefinition>
   >;
   setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
   staticBlocksMatrix: BinaryMatrix;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
-  isBlockedDown: boolean;
+  canMoveDown: boolean;
   fallInterval: number;
 }
 
 const MIN_INTERVAL = 0;
 
 export default function useFallingBlock({
-  blockPosition,
+  blockVectors,
   setActiveBlock,
   setHookLocation,
   staticBlocksMatrix,
   setStaticBlocksMatrix,
-  isBlockedDown,
+  canMoveDown,
   fallInterval,
 }: FallingBlockProps) {
   const passedTime = useRef(0);
   const lastIntervalTimeStamp = useRef(0);
-  passedTime.current = Date.now() - lastIntervalTimeStamp.current;
 
   const spawnBlock = useCallback(
     function spawnBlock() {
@@ -53,31 +52,34 @@ export default function useFallingBlock({
   );
 
   useEffect(() => {
-    const fall = setInterval(() => {
-      lastIntervalTimeStamp.current = Date.now();
+    passedTime.current = Date.now() - lastIntervalTimeStamp.current;
 
+    const fall = setInterval(() => {
       if (!staticBlocksMatrix || typeof setStaticBlocksMatrix !== "function") {
         return;
       }
-      if (isBlockedDown) {
-        handleBlockSettle({ blockPosition, setStaticBlocksMatrix });
+      if (canMoveDown) {
+        moveBlockByOne(setHookLocation, "down");
+      } else {
+        handleBlockSettle({ blockVectors, setStaticBlocksMatrix });
         resetHookLocation();
         spawnBlock();
-      } else {
-        moveBlockByOne(setHookLocation, "down");
       }
     }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
 
     return () => {
+      console.log("not ok");
+      lastIntervalTimeStamp.current = Date.now();
+      passedTime.current = 0;
       clearInterval(fall);
     };
   }, [
-    blockPosition,
+    blockVectors,
     resetHookLocation,
     setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
-    isBlockedDown,
+    canMoveDown,
     fallInterval,
     spawnBlock,
   ]);
