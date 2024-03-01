@@ -33,8 +33,9 @@ export default function useFallingBlock({
   canMoveDown,
   fallInterval,
 }: FallingBlockProps) {
-  const passedTime = useRef(0);
-  const lastIntervalTimeStamp = useRef(0);
+  const passedIntervalTime = useRef(0);
+  const intervalStartTimestamp = useRef(0);
+  const fall = useRef<undefined | number>(undefined);
 
   const spawnBlock = useCallback(
     function spawnBlock() {
@@ -51,36 +52,43 @@ export default function useFallingBlock({
     [setHookLocation]
   );
 
-  useEffect(() => {
-    passedTime.current = Date.now() - lastIntervalTimeStamp.current;
+  const handleFall = useCallback(
+    function handleFall() {
+      fall.current = setInterval(() => {
+        intervalStartTimestamp.current = Date.now();
+        if (
+          !staticBlocksMatrix ||
+          typeof setStaticBlocksMatrix !== "function"
+        ) {
+          return;
+        }
+        if (canMoveDown) {
+          moveBlockByOne(setHookLocation, "down");
+        } else {
+          handleBlockSettle({ blockVectors, setStaticBlocksMatrix });
+          resetHookLocation();
+          spawnBlock();
+        }
+      }, Math.max(MIN_INTERVAL, fallInterval - passedIntervalTime.current));
+    },
+    [
+      blockVectors,
+      canMoveDown,
+      resetHookLocation,
+      setHookLocation,
+      setStaticBlocksMatrix,
+      spawnBlock,
+      staticBlocksMatrix,
+      fallInterval,
+    ]
+  );
 
-    const fall = setInterval(() => {
-      if (!staticBlocksMatrix || typeof setStaticBlocksMatrix !== "function") {
-        return;
-      }
-      if (canMoveDown) {
-        moveBlockByOne(setHookLocation, "down");
-      } else {
-        handleBlockSettle({ blockVectors, setStaticBlocksMatrix });
-        resetHookLocation();
-        spawnBlock();
-      }
-    }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
+  useEffect(() => {
+    handleFall();
 
     return () => {
-      console.log("not ok");
-      lastIntervalTimeStamp.current = Date.now();
-      passedTime.current = 0;
-      clearInterval(fall);
+      passedIntervalTime.current = Date.now() - intervalStartTimestamp.current;
+      clearInterval(fall.current);
     };
-  }, [
-    blockVectors,
-    resetHookLocation,
-    setHookLocation,
-    staticBlocksMatrix,
-    setStaticBlocksMatrix,
-    canMoveDown,
-    fallInterval,
-    spawnBlock,
-  ]);
+  }, [fall, fallInterval, handleFall]);
 }

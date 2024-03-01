@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { BlockVectors } from "$types/typeCollection";
+import { useRef, useState } from "react";
 import { BOARD_DIMENSIONS } from "$config/board";
 import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
 import useMovement from "$hooks/useMovement";
@@ -13,6 +12,7 @@ import {
   translateBlockPosition,
 } from "$utils/block/block";
 import { Wrapper, Board, Square } from "./GameBoard.parts";
+import { BlockVectors } from "$types/globalTypes";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
@@ -23,28 +23,31 @@ export default function GameBoard() {
   );
   const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
   const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
-
-  const [activeRotation] = useRotate({
+  const activeRotationIdx = useRotate({
     activeBlock,
     staticBlocksMatrix,
     hookLocation,
   });
+  const blockVectors = useRef<BlockVectors>(
+    translateBlockPosition({
+      BlockVectors: activeBlock.rotations[activeRotationIdx],
+      offset: hookLocation,
+    })
+  );
 
-  const currentRotation = activeBlock.rotations[activeRotation];
-
-  const blockVectors = translateBlockPosition({
-    BlockVectors: currentRotation,
+  blockVectors.current = translateBlockPosition({
+    BlockVectors: activeBlock.rotations[activeRotationIdx],
     offset: hookLocation,
-  }) as BlockVectors;
+  });
 
   const canMove = getMovePossibilities(
     ["left", "right", "down"],
-    blockVectors,
+    blockVectors.current,
     staticBlocksMatrix
   );
 
   useFallingBlock({
-    blockVectors,
+    blockVectors: blockVectors.current,
     setActiveBlock,
     setHookLocation,
     staticBlocksMatrix,
@@ -52,6 +55,7 @@ export default function GameBoard() {
     canMoveDown: canMove.down,
     fallInterval,
   });
+
   useMovement({
     setHookLocation,
     setFallInterval,
@@ -61,7 +65,10 @@ export default function GameBoard() {
 
   function renderSquares() {
     const componentArray = [];
-    const readyToRender = createReadyToRender(staticBlocksMatrix, blockVectors);
+    const readyToRender = createReadyToRender(
+      staticBlocksMatrix,
+      blockVectors.current
+    );
 
     for (let i = 0; i < 200; i++) {
       componentArray.push(
