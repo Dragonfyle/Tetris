@@ -1,6 +1,6 @@
 import { Vector } from "$types/typeCollection";
 
-const INITIAL_INTERVAL = 100;
+const INITIAL_INTERVAL = 300;
 
 const SPAWN_LOCATION = [-4, 4] as Vector;
 

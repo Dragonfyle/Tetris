@@ -20,11 +20,11 @@ export default function useRotate({
   hookLocation,
 }: useRotateProps) {
   const [isDown, setIsDown] = useState(false);
-  const [activeRotation, setActiveRotation] = useState(0 as RotationIdx);
+  const [activeRotationIdx, setActiveRotationIdx] = useState(0 as RotationIdx);
 
   const nextRotationIdx = {
-    clockwise: getNextRotation("clockwise", activeRotation),
-    counterclockwise: getNextRotation("counterclockwise", activeRotation),
+    clockwise: getNextRotation("clockwise", activeRotationIdx),
+    counterclockwise: getNextRotation("counterclockwise", activeRotationIdx),
   };
 
   const nextRotations = {
@@ -62,12 +62,12 @@ export default function useRotate({
       const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleRotate() {
-        // if (!isDown) {
-        setIsDown(true);
-        if (canRotate.clockwise) {
-          setActiveRotation(nextRotationIdx.clockwise);
+        if (!isDown) {
+          setIsDown(true);
+          if (canRotate.clockwise) {
+            setActiveRotationIdx(nextRotationIdx.clockwise);
+          }
         }
-        // }
         if (e.type === "keyup") {
           setIsDown(false);
         }
@@ -92,5 +92,5 @@ export default function useRotate({
     };
   }, [keyboardListener]);
 
-  return [activeRotation];
+  return activeRotationIdx;
 }

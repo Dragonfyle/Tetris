@@ -2,7 +2,7 @@ import type {
   BlockName,
   BlockDefinitions,
   RenderableBlockList,
-} from "./block/block";
+} from "$types/typeCollection";
 import { BLOCK_DEFINITIONS } from "$data/blockData";
 
 function getRandomNumber(low: number = 0, high: number = 1) {
