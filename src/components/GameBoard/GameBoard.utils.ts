@@ -8,6 +8,7 @@ import {
   PositionStatuses,
 } from "$types/typeCollection";
 import { BOARD_EDGE } from "$config/board";
+import { MIN_INTERVAL } from "$config/initialSettings";
 
 function isOnBoard([y, x]: Vector) {
   return (
@@ -115,6 +116,17 @@ const getMovePossibilities: GetPositionStatus = (
   return result;
 };
 
+function calculateFallInterval(
+  initialInterval: number,
+  speedupFactor: number,
+  numRowsFilled: number
+) {
+  return Math.max(
+    MIN_INTERVAL,
+    initialInterval / speedupFactor - numRowsFilled * 3
+  );
+}
+
 export {
   isOnBoard,
   getAdjacentPosition,
@@ -124,4 +136,5 @@ export {
   pruneRow,
   createReadyToRender,
   getMovePossibilities,
+  calculateFallInterval,
 };

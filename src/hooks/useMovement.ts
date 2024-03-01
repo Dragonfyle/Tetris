@@ -1,21 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
 import { moveBlockByOne } from "$utils/block/block";
 import { Vector } from "$types/typeCollection";
-import { INITIAL_INTERVAL } from "$config/initialSettings";
+import {
+  ARROW_DOWN_SPEEDUP_FACTOR,
+  DEFAULT_SPEEDUP_FACTOR,
+} from "$config/initialSettings";
 
 interface useMovementProps {
   setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
-  setFallInterval: React.Dispatch<React.SetStateAction<number>>;
   canMoveLeft: boolean;
   canMoveRight: boolean;
 }
 
 export default function useMovement({
   setHookLocation,
-  setFallInterval,
   canMoveLeft,
   canMoveRight,
 }: useMovementProps) {
+  const [speedupFactor, setSpeedupFactor] = useState(DEFAULT_SPEEDUP_FACTOR);
   const [isDown, setIsDown] = useState(false);
 
   const keyboardListener = useCallback(
@@ -43,12 +45,12 @@ export default function useMovement({
         if (e.type === "keydown") {
           if (!isDown) {
             setIsDown(true);
-            setFallInterval((prev) => prev / 20);
+            setSpeedupFactor(ARROW_DOWN_SPEEDUP_FACTOR);
           }
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setFallInterval(INITIAL_INTERVAL);
+          setSpeedupFactor(DEFAULT_SPEEDUP_FACTOR);
         }
       }
 
@@ -69,7 +71,7 @@ export default function useMovement({
           break;
       }
     },
-    [setHookLocation, setFallInterval, isDown, canMoveLeft, canMoveRight]
+    [setHookLocation, isDown, canMoveLeft, canMoveRight]
   );
 
   useEffect(() => {
@@ -81,4 +83,6 @@ export default function useMovement({
       window.removeEventListener("keyup", keyboardListener);
     };
   }, [keyboardListener]);
+
+  return speedupFactor;
 }

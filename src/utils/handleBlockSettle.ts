@@ -6,7 +6,9 @@ import { BOARD_DIMENSIONS } from "$config/board";
 
 interface HandleBlockSettle {
   blockVectors: BlockVectors;
+  staticBlocksMatrix: BinaryMatrix;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
+  setNumRowsFilled: React.Dispatch<React.SetStateAction<number>>;
 }
 
 function solidifyBlock(
@@ -24,25 +26,27 @@ function solidifyBlock(
 
 function handleBlockSettle({
   blockVectors,
+  staticBlocksMatrix,
   setStaticBlocksMatrix,
+  setNumRowsFilled,
 }: HandleBlockSettle) {
-  setStaticBlocksMatrix((prev) => {
-    const newStaticMatrix = solidifyBlock(prev, blockVectors).reduce(
-      (acc: BinaryMatrix, row: BinaryElement[]) => {
-        const currentRow = pruneRow(row);
+  const newStaticMatrix = solidifyBlock(
+    staticBlocksMatrix,
+    blockVectors
+  ).reduce((acc: BinaryMatrix, row: BinaryElement[]) => {
+    const currentRow = pruneRow(row);
 
-        if (currentRow) {
-          acc.push(currentRow);
-        } else {
-          acc.unshift(createRow(BOARD_DIMENSIONS.WIDTH));
-        }
+    if (currentRow) {
+      acc.push(currentRow);
+    } else {
+      setNumRowsFilled((prev) => prev + 1);
+      acc.unshift(createRow(BOARD_DIMENSIONS.WIDTH));
+    }
 
-        return acc;
-      },
-      []
-    );
-    return newStaticMatrix;
-  });
+    return acc;
+  }, []);
+
+  setStaticBlocksMatrix(newStaticMatrix);
 }
 
 export { handleBlockSettle };
