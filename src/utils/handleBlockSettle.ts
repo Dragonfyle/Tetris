@@ -1,20 +1,23 @@
-import { BlockVectors } from "../types/globalTypes";
-import { BinaryElement, BinaryMatrix } from "../types/globalTypes";
+import { BlockVectors } from "$types/typeCollection.ts";
+import { BinaryElement, BinaryMatrix } from "$types/typeCollection.ts";
 import { createRow } from "./matrix";
-import { pruneRow } from "../components/GameBoard/GameBoard.utils";
-import { BOARD_DIMENSIONS } from "../config/board";
+import { pruneRow } from "$components/GameBoard/GameBoard.utils";
+import { BOARD_DIMENSIONS } from "$config/board";
 
 interface HandleBlockSettle {
-  blockPosition: BlockVectors;
+  blockVectors: BlockVectors;
+  staticBlocksMatrix: BinaryMatrix;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
+  setNumRowsFilled: React.Dispatch<React.SetStateAction<number>>;
 }
 
 function solidifyBlock(
   matrix: BinaryMatrix,
-  blockPosition: BlockVectors
+  blockVectors: BlockVectors
 ): BinaryMatrix {
   const newMatrix = JSON.parse(JSON.stringify(matrix));
-  blockPosition.map(([y, x]) => {
+
+  blockVectors.map(([y, x]) => {
     newMatrix[y][x] = true;
   });
 
@@ -22,26 +25,28 @@ function solidifyBlock(
 }
 
 function handleBlockSettle({
-  blockPosition,
+  blockVectors,
+  staticBlocksMatrix,
   setStaticBlocksMatrix,
+  setNumRowsFilled,
 }: HandleBlockSettle) {
-  setStaticBlocksMatrix((prev) => {
-    const newStaticMatrix = solidifyBlock(prev, blockPosition).reduce(
-      (acc: BinaryMatrix, row: BinaryElement[]) => {
-        const currentRow = pruneRow(row);
+  const newStaticMatrix = solidifyBlock(
+    staticBlocksMatrix,
+    blockVectors
+  ).reduce((acc: BinaryMatrix, row: BinaryElement[]) => {
+    const currentRow = pruneRow(row);
 
-        if (currentRow) {
-          acc.push(currentRow);
-        } else {
-          acc.unshift(createRow(BOARD_DIMENSIONS.WIDTH));
-        }
+    if (currentRow) {
+      acc.push(currentRow);
+    } else {
+      setNumRowsFilled((prev) => prev + 1);
+      acc.unshift(createRow(BOARD_DIMENSIONS.WIDTH));
+    }
 
-        return acc;
-      },
-      []
-    );
-    return newStaticMatrix;
-  });
+    return acc;
+  }, []);
+
+  setStaticBlocksMatrix(newStaticMatrix);
 }
 
 export { handleBlockSettle };

@@ -1,12 +1,12 @@
+import { ROTATIONS, translateVector } from "./block/block";
 import {
-  type BlockDefinitions,
-  type BlockDefinition,
-  type RenderableBlockList,
-  NUM_ROTATIONS,
+  BlockVectors,
+  Vector,
+  BlockDefinition,
+  BlockDefinitions,
+  RenderableBlockList,
   BlockName,
-  translateVector,
-} from "./block/block";
-import { BlockVectors, Vector } from "../types/globalTypes";
+} from "$types/typeCollection";
 
 function findBlockCenter(blockMatrixWidth: number) {
   const halfWidth = Math.floor(blockMatrixWidth / 2);
@@ -23,7 +23,7 @@ function getBlockRotations(blockVectors: Vector[]) {
   const inputVectors = [...blockVectors.map((vector) => [...vector] as Vector)];
   const AllRotations: BlockVectors[] = [inputVectors];
 
-  for (let i = 1; i < NUM_ROTATIONS; i++) {
+  for (let i = 1; i < ROTATIONS.NUM_ROTATIONS; i++) {
     const previousRotation = i - 1;
 
     AllRotations.push(rotateClockwise(AllRotations[previousRotation]));

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { getNextRotation, translateBlockPosition } from "$utils/block/block";
+import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
 import {
+  Vector,
+  BinaryMatrix,
   RenderableBlockDefinition,
   RotationIdx,
-  getNextRotation,
-  translateBlockPosition,
-} from "../utils/block/block";
-import { isRotationPossible } from "../components/GameBoard/GameBoard.utils";
-import { Vector, BinaryMatrix } from "../types/globalTypes";
+} from "$types/typeCollection";
 
 interface useRotateProps {
   activeBlock: RenderableBlockDefinition;
@@ -20,11 +20,11 @@ export default function useRotate({
   hookLocation,
 }: useRotateProps) {
   const [isDown, setIsDown] = useState(false);
-  const [activeRotation, setActiveRotation] = useState(0 as RotationIdx);
+  const [activeRotationIdx, setActiveRotationIdx] = useState(0 as RotationIdx);
 
   const nextRotationIdx = {
-    clockwise: getNextRotation("clockwise", activeRotation),
-    counterclockwise: getNextRotation("counterclockwise", activeRotation),
+    clockwise: getNextRotation("clockwise", activeRotationIdx),
+    counterclockwise: getNextRotation("counterclockwise", activeRotationIdx),
   };
 
   const nextRotations = {
@@ -64,9 +64,9 @@ export default function useRotate({
       function handleRotate() {
         if (!isDown) {
           setIsDown(true);
-          setActiveRotation((prev) => {
-            return canRotate.clockwise ? nextRotationIdx.clockwise : prev;
-          });
+          if (canRotate.clockwise) {
+            setActiveRotationIdx(nextRotationIdx.clockwise);
+          }
         }
         if (e.type === "keyup") {
           setIsDown(false);
@@ -92,5 +92,5 @@ export default function useRotate({
     };
   }, [keyboardListener]);
 
-  return [activeRotation];
+  return activeRotationIdx;
 }

@@ -1,7 +1,7 @@
 import * as P from "./MainCanvas.parts";
-import GameBoard from "../GameBoard/GameBoard";
-import LeftUI from "../LeftUI/LeftUI";
-import RightUI from "../RightUI/RightUI";
+import GameBoard from "$components/GameBoard/GameBoard";
+import LeftUI from "$components/LeftUI/LeftUI";
+import RightUI from "$components/RightUI/RightUI";
 
 export default function MainCanvas() {
   return (

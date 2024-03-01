@@ -1,10 +1,14 @@
 import {
   BinaryElement,
   BinaryRow,
+  BinaryMatrix,
+  Vector,
   BlockVectors,
-} from "../../types/globalTypes";
-import { MoveDirection, Vector, BinaryMatrix } from "../../types/globalTypes";
-import { BOARD_EDGE } from "../../config/board";
+  MoveDirection,
+  PositionStatuses,
+} from "$types/typeCollection";
+import { BOARD_EDGE } from "$config/board";
+import { MIN_INTERVAL } from "$config/initialSettings";
 
 function isOnBoard([y, x]: Vector) {
   return (
@@ -88,6 +92,41 @@ function createReadyToRender(
   return readyToRender;
 }
 
+type GetPositionStatus = (
+  directions: MoveDirection[],
+  blockPosition: BlockVectors,
+  staticBlocksMatrix: BinaryMatrix
+) => PositionStatuses;
+
+const getMovePossibilities: GetPositionStatus = (
+  directions,
+  blockPosition,
+  staticBlocksMatrix
+) => {
+  const result = {} as PositionStatuses;
+
+  for (const direction of directions) {
+    const canMove =
+      !isBoardEdge(direction, blockPosition) &&
+      !isPositionOccupied(direction, blockPosition, staticBlocksMatrix);
+
+    result[direction] = canMove;
+  }
+
+  return result;
+};
+
+function calculateFallInterval(
+  initialInterval: number,
+  speedupFactor: number,
+  numRowsFilled: number
+) {
+  return Math.max(
+    MIN_INTERVAL,
+    initialInterval / speedupFactor - numRowsFilled * 3
+  );
+}
+
 export {
   isOnBoard,
   getAdjacentPosition,
@@ -96,4 +135,6 @@ export {
   isRotationPossible,
   pruneRow,
   createReadyToRender,
+  getMovePossibilities,
+  calculateFallInterval,
 };

@@ -1,40 +1,38 @@
 import { useEffect, useRef, useCallback } from "react";
-import { handleBlockSettle } from "../utils/handleBlockSettle";
-import { BinaryMatrix, BlockVectors, Vector } from "../types/globalTypes";
-import getRenderableBlock from "../utils/getRandomBlock";
 import {
+  BinaryMatrix,
+  Vector,
   RenderableBlockDefinition,
-  moveBlockByOne as moveHookByOne,
-  renderableBlockList,
-} from "../utils/block/block";
-import { SPAWN_LOCATION } from "../config/initialSettings";
+} from "$types/typeCollection";
+import getRenderableBlock from "$utils/getRandomBlock";
+import { moveBlockByOne, renderableBlockList } from "$utils/block/block";
 
 interface FallingBlockProps {
-  blockPosition: BlockVectors;
   setActiveBlock: React.Dispatch<
     React.SetStateAction<RenderableBlockDefinition>
   >;
   setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
   staticBlocksMatrix: BinaryMatrix;
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
-  isBlockedDown: boolean;
+  canMoveDown: boolean;
   fallInterval: number;
+  handleEndFall: () => void;
 }
 
 const MIN_INTERVAL = 0;
 
 export default function useFallingBlock({
-  blockPosition,
   setActiveBlock,
   setHookLocation,
   staticBlocksMatrix,
   setStaticBlocksMatrix,
-  isBlockedDown,
+  canMoveDown,
   fallInterval,
+  handleEndFall,
 }: FallingBlockProps) {
-  const passedTime = useRef(0);
-  const lastIntervalTimeStamp = useRef(0);
-  passedTime.current = Date.now() - lastIntervalTimeStamp.current;
+  const passedIntervalTime = useRef(0);
+  const intervalStartTimestamp = useRef(0);
+  const fall = useRef<undefined | number>(undefined);
 
   const spawnBlock = useCallback(
     function spawnBlock() {
@@ -44,40 +42,41 @@ export default function useFallingBlock({
     [setActiveBlock]
   );
 
-  const resetHookLocation = useCallback(
-    function resetHookLocation() {
-      setHookLocation(() => SPAWN_LOCATION);
+  const handleFall = useCallback(
+    function handleFall() {
+      fall.current = setInterval(() => {
+        intervalStartTimestamp.current = Date.now();
+        if (
+          !staticBlocksMatrix ||
+          typeof setStaticBlocksMatrix !== "function"
+        ) {
+          return;
+        }
+        if (canMoveDown) {
+          moveBlockByOne(setHookLocation, "down");
+        } else {
+          handleEndFall();
+          spawnBlock();
+        }
+      }, Math.max(MIN_INTERVAL, fallInterval - passedIntervalTime.current));
     },
-    [setHookLocation]
+    [
+      canMoveDown,
+      setHookLocation,
+      setStaticBlocksMatrix,
+      spawnBlock,
+      staticBlocksMatrix,
+      fallInterval,
+      handleEndFall,
+    ]
   );
 
   useEffect(() => {
-    const fall = setInterval(() => {
-      lastIntervalTimeStamp.current = Date.now();
-
-      if (!staticBlocksMatrix || typeof setStaticBlocksMatrix !== "function") {
-        return;
-      }
-      if (isBlockedDown) {
-        handleBlockSettle({ blockPosition, setStaticBlocksMatrix });
-        resetHookLocation();
-        spawnBlock();
-      } else {
-        moveHookByOne(setHookLocation, "down");
-      }
-    }, Math.max(MIN_INTERVAL, fallInterval - passedTime.current));
+    handleFall();
 
     return () => {
-      clearInterval(fall);
+      passedIntervalTime.current = Date.now() - intervalStartTimestamp.current;
+      clearInterval(fall.current);
     };
-  }, [
-    blockPosition,
-    resetHookLocation,
-    setHookLocation,
-    staticBlocksMatrix,
-    setStaticBlocksMatrix,
-    isBlockedDown,
-    fallInterval,
-    spawnBlock,
-  ]);
+  }, [fall, fallInterval, handleFall]);
 }

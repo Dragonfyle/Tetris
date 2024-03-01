@@ -1,21 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
-import { moveBlockByOne } from "../utils/block/block";
-import { Vector } from "../types/globalTypes";
-import { INITIAL_INTERVAL } from "../config/initialSettings";
+import { moveBlockByOne } from "$utils/block/block";
+import { Vector } from "$types/typeCollection";
+import {
+  ARROW_DOWN_SPEEDUP_FACTOR,
+  DEFAULT_SPEEDUP_FACTOR,
+} from "$config/initialSettings";
 
 interface useMovementProps {
-  onKeyDown: React.Dispatch<React.SetStateAction<Vector>>;
-  setFallInterval: React.Dispatch<React.SetStateAction<number>>;
-  isBlockedLeft: boolean;
-  isBlockedRight: boolean;
+  setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
+  canMoveLeft: boolean;
+  canMoveRight: boolean;
 }
 
 export default function useMovement({
-  onKeyDown,
-  setFallInterval,
-  isBlockedLeft,
-  isBlockedRight,
+  setHookLocation,
+  canMoveLeft,
+  canMoveRight,
 }: useMovementProps) {
+  const [speedupFactor, setSpeedupFactor] = useState(DEFAULT_SPEEDUP_FACTOR);
   const [isDown, setIsDown] = useState(false);
 
   const keyboardListener = useCallback(
@@ -28,18 +30,14 @@ export default function useMovement({
       const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
       function handleLeft() {
-        if (isBlockedLeft) return;
-
-        if (e.type === "keydown") {
-          moveBlockByOne(onKeyDown, "left");
+        if (canMoveLeft && e.type === "keydown") {
+          moveBlockByOne(setHookLocation, "left");
         }
       }
 
       function handleRight() {
-        if (isBlockedRight) return;
-
-        if (e.type === "keydown") {
-          moveBlockByOne(onKeyDown, "right");
+        if (canMoveRight && e.type === "keydown") {
+          moveBlockByOne(setHookLocation, "right");
         }
       }
 
@@ -47,12 +45,12 @@ export default function useMovement({
         if (e.type === "keydown") {
           if (!isDown) {
             setIsDown(true);
-            setFallInterval((prev) => prev / 20);
+            setSpeedupFactor(ARROW_DOWN_SPEEDUP_FACTOR);
           }
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setFallInterval(INITIAL_INTERVAL);
+          setSpeedupFactor(DEFAULT_SPEEDUP_FACTOR);
         }
       }
 
@@ -73,7 +71,7 @@ export default function useMovement({
           break;
       }
     },
-    [onKeyDown, setFallInterval, isDown, isBlockedLeft, isBlockedRight]
+    [setHookLocation, isDown, canMoveLeft, canMoveRight]
   );
 
   useEffect(() => {
@@ -85,4 +83,6 @@ export default function useMovement({
       window.removeEventListener("keyup", keyboardListener);
     };
   }, [keyboardListener]);
+
+  return speedupFactor;
 }

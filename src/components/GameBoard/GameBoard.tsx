@@ -1,79 +1,101 @@
-import { useState } from "react";
-import { Wrapper, Board, Square } from "./GameBoard.parts";
-import { BOARD_DIMENSIONS } from "../../config/board";
-import { INITIAL_INTERVAL, SPAWN_LOCATION } from "../../config/initialSettings";
+import { useCallback, useRef, useState } from "react";
+import { BOARD_DIMENSIONS } from "$config/board";
+import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
+import useMovement from "$hooks/useMovement";
+import useFallingBlock from "$hooks/useFallingBlock";
+import useRotate from "$hooks/useRotate";
+import getRenderableBlock from "$utils/getRandomBlock";
+import { createMatrix } from "$utils/matrix";
 import {
-  isBoardEdge,
-  isPositionOccupied,
+  calculateFallInterval,
   createReadyToRender,
+  getMovePossibilities,
 } from "./GameBoard.utils";
-import { createMatrix } from "../../utils/matrix";
-import useMovement from "../../hooks/useMovement";
-import useFallingBlock from "../../hooks/useFallingBlock";
-import getRenderableBlock from "../../utils/getRandomBlock";
 import {
   renderableBlockList,
   translateBlockPosition,
-} from "../../utils/block/block";
-import { BlockVectors } from "../../types/globalTypes";
-import useRotate from "../../hooks/useRotate";
+} from "$utils/block/block";
+import { Wrapper, Board, Square } from "./GameBoard.parts";
+import { BlockVectors } from "$types/globalTypes";
+import { handleBlockSettle } from "$utils/handleBlockSettle";
 
 export default function GameBoard() {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
+  const [numRowsFilled, setNumRowsFilled] = useState(0);
   const [activeBlock, setActiveBlock] = useState(
     getRenderableBlock(renderableBlockList)
   );
   const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
-  const [fallInterval, setFallInterval] = useState(INITIAL_INTERVAL);
-
-  const [activeRotation] = useRotate({
+  const activeRotationIdx = useRotate({
     activeBlock,
     staticBlocksMatrix,
     hookLocation,
   });
+  const blockVectors = useRef<BlockVectors>(
+    translateBlockPosition({
+      BlockVectors: activeBlock.rotations[activeRotationIdx],
+      offset: hookLocation,
+    })
+  );
 
-  const currentRotation = activeBlock.rotations[activeRotation];
-
-  const blockPosition = translateBlockPosition({
-    BlockVectors: currentRotation,
+  blockVectors.current = translateBlockPosition({
+    BlockVectors: activeBlock.rotations[activeRotationIdx],
     offset: hookLocation,
-  }) as BlockVectors;
+  });
 
-  const isSquareOccupied = {
-    left: isPositionOccupied("left", blockPosition, staticBlocksMatrix),
-    right: isPositionOccupied("right", blockPosition, staticBlocksMatrix),
-    down: isPositionOccupied("down", blockPosition, staticBlocksMatrix),
-  };
+  const canMove = getMovePossibilities(
+    ["left", "right", "down"],
+    blockVectors.current,
+    staticBlocksMatrix
+  );
 
-  const isBlocked = {
-    left: isSquareOccupied.left || isBoardEdge("left", blockPosition),
-    right: isSquareOccupied.right || isBoardEdge("right", blockPosition),
-    down: isSquareOccupied.down || isBoardEdge("down", blockPosition),
-  };
+  const resetHookLocation = useCallback(
+    function resetHookLocation() {
+      setHookLocation(SPAWN_LOCATION);
+    },
+    [setHookLocation]
+  );
+
+  function handleEndFall() {
+    handleBlockSettle({
+      blockVectors: blockVectors.current,
+      staticBlocksMatrix,
+      setStaticBlocksMatrix,
+      setNumRowsFilled,
+    });
+    resetHookLocation();
+  }
+
+  const speedupFactor = useMovement({
+    setHookLocation,
+    canMoveLeft: canMove.left,
+    canMoveRight: canMove.right,
+  });
+
+  const fallInterval = calculateFallInterval(
+    INITIAL_INTERVAL,
+    speedupFactor,
+    numRowsFilled
+  );
+  console.log(fallInterval);
 
   useFallingBlock({
-    blockPosition,
+    handleEndFall,
     setActiveBlock,
     setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
-    isBlockedDown: isBlocked.down,
+    canMoveDown: canMove.down,
     fallInterval,
-  });
-  useMovement({
-    onKeyDown: setHookLocation,
-    setFallInterval,
-    isBlockedLeft: isBlocked.left,
-    isBlockedRight: isBlocked.right,
   });
 
   function renderSquares() {
     const componentArray = [];
     const readyToRender = createReadyToRender(
       staticBlocksMatrix,
-      blockPosition
+      blockVectors.current
     );
 
     for (let i = 0; i < 200; i++) {

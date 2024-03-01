@@ -1,47 +1,32 @@
-import { BLOCK_DEFINITIONS } from "../../data/blockData";
 import {
-  KeyOfType,
-  MappedKeysAndValues,
-  MoveDirection,
   RotationDirection,
   BlockVectors,
   Vector,
-} from "../../types/globalTypes";
-import { transformDefinitions } from "../transformDefinitions";
-
-type BlockDefinition = (0 | 1)[][];
-
-type BlockDefinitions = typeof BLOCK_DEFINITIONS;
-
-type BlockName = KeyOfType<BlockDefinitions>;
-
-type RotationsList = BlockVectors[];
-
-type RotationIdx = 0 | 1 | 2 | 3;
-
-type RenderableBlockDefinition = {
-  rotations: RotationsList;
-  spawnHook: Vector;
-};
-
-type RenderableBlockList = MappedKeysAndValues<
-  BlockName,
-  RenderableBlockDefinition
->;
-
-interface TranslateBlockPosition {
-  BlockVectors: BlockVectors;
-  offset: Vector;
-}
-
-type MoveBlockByOne = (
-  callback: React.Dispatch<React.SetStateAction<Vector>>,
-  direction: MoveDirection
-) => void;
+  TranslateBlockPosition,
+  MoveBlockByOne,
+  RotationIdx,
+} from "$types/typeCollection";
+import { BLOCK_DEFINITIONS } from "$data/blockData";
+import { transformDefinitions } from "$utils/transformDefinitions";
 
 const INITIAL_ROTATION_IDX = 0;
 
-const NUM_ROTATIONS = 4;
+const ROTATIONS = {
+  MIN_IDX: 0 as RotationIdx,
+  MAX_IDX: 3 as RotationIdx,
+  NUM_ROTATIONS: 4,
+};
+
+const TRANSLATION_VECTORS = {
+  left: [0, -1] as Vector,
+  right: [0, 1] as Vector,
+  down: [1, 0] as Vector,
+};
+
+const ROTATION_TO_IDX_MAP = {
+  clockwise: 1,
+  counterclockwise: -1,
+};
 
 const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
 
@@ -58,45 +43,27 @@ function translateBlockPosition({
   return BlockVectors.map((vector) => translateVector(vector, offset));
 }
 
-const moveHookByOne: MoveBlockByOne = (callback, direction) => {
-  switch (direction) {
-    case "down":
-      callback(([y, x]) => [y + 1, x]);
-      break;
-    case "left":
-      callback(([y, x]) => [y, x - 1]);
-      break;
-    case "right":
-      callback(([y, x]) => [y, x + 1]);
-      break;
-    default:
-      callback(([y, x]) => [y, x]);
-      break;
-  }
+const moveHookByOne: MoveBlockByOne = (setHookLocation, direction) => {
+  const offset = TRANSLATION_VECTORS[direction];
+
+  setHookLocation(([y, x]) => translateVector([y, x], offset));
 };
 
 function getNextRotation(
   direction: RotationDirection,
   currentRotationIndex: RotationIdx
 ): RotationIdx {
-  switch (direction) {
-    case "clockwise":
-      return ((currentRotationIndex + 1) % NUM_ROTATIONS) as RotationIdx;
-    case "counterclockwise":
-      return ((currentRotationIndex - 1 + NUM_ROTATIONS) %
-        NUM_ROTATIONS) as RotationIdx;
+  const newIdx = ((currentRotationIndex + ROTATION_TO_IDX_MAP[direction]) %
+    ROTATIONS.NUM_ROTATIONS) as RotationIdx;
+
+  if (newIdx > ROTATIONS.NUM_ROTATIONS - 1) {
+    return ROTATIONS.MIN_IDX;
+  } else if (newIdx < 0) {
+    return ROTATIONS.MAX_IDX;
+  } else {
+    return newIdx;
   }
 }
-
-export type {
-  BlockDefinition,
-  BlockName,
-  RenderableBlockList,
-  RenderableBlockDefinition,
-  BlockDefinitions,
-  RotationsList,
-  RotationIdx,
-};
 
 export {
   renderableBlockList,
@@ -105,5 +72,5 @@ export {
   translateVector,
   translateBlockPosition,
   INITIAL_ROTATION_IDX,
-  NUM_ROTATIONS,
+  ROTATIONS,
 };
