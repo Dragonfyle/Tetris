@@ -7,9 +7,9 @@ import {
 
 interface GameBoardProps {
   numRowsFilled: number;
-  isGameOver: boolean;
   setNumRowsFilled: React.Dispatch<React.SetStateAction<number>>;
-  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  isRunning: boolean;
+  setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type GetPositionStatus = (

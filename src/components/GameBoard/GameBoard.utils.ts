@@ -75,7 +75,7 @@ function pruneRow(row: BinaryRow) {
   }
 }
 
-function createReadyToRender(
+function mergeActiveBlockWithMatrix(
   staticBlocksMatrix: BinaryMatrix,
   blockPosition: BlockVectors
 ) {
@@ -126,7 +126,7 @@ export {
   isBoardEdge,
   isRotationPossible,
   pruneRow,
-  createReadyToRender,
+  mergeActiveBlockWithMatrix,
   getMovePossibilities,
   calculateFallInterval,
 };

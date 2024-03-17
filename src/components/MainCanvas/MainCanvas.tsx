@@ -5,22 +5,27 @@ import RightUI from "$components/RightUI/RightUI";
 import { MainCanvasProps } from "./MainCanvas.types";
 
 export default function MainCanvas({
-  isGameOver,
-  setIsGameOver,
   score,
   numRowsFilled,
   setNumRowsFilled,
+  isRunning,
+  setIsRunning,
 }: MainCanvasProps) {
   return (
-    <P.Wrapper>
-      <LeftUI score={score} />
-      <GameBoard
-        numRowsFilled={numRowsFilled}
-        isGameOver={isGameOver}
-        setNumRowsFilled={setNumRowsFilled}
-        setIsGameOver={setIsGameOver}
-      ></GameBoard>
-      <RightUI />
-    </P.Wrapper>
+    <P.Canvas>
+      <P.Flexbox>
+        <P.ButtonWrapper></P.ButtonWrapper>
+        <P.Wrapper>
+          <LeftUI score={score} />
+          <GameBoard
+            numRowsFilled={numRowsFilled}
+            setNumRowsFilled={setNumRowsFilled}
+            isRunning={isRunning}
+            setIsRunning={setIsRunning}
+          ></GameBoard>
+          <RightUI />
+        </P.Wrapper>
+      </P.Flexbox>
+    </P.Canvas>
   );
 }

@@ -1,15 +1,19 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { BlockVectors } from "$types/globalTypes";
+import { GameBoardProps } from "./GameBoard.types";
 import { BOARD_DIMENSIONS } from "$config/board";
 import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
 import useMovement from "$hooks/useMovement";
 import useFallingBlock from "$hooks/useFallingBlock";
 import useRotate from "$hooks/useRotate";
+import GameOver from "$components/GameOver/GameOver";
+import HowToStart from "$components/HowToStart/HowToStart";
 import getRenderableBlock from "$utils/getRandomBlock";
 import { createMatrix } from "$utils/matrix";
+import { renderSquares } from "$utils/renderSquares";
 import {
   calculateFallInterval,
-  createReadyToRender,
   getMovePossibilities,
   isOnBoard,
 } from "./GameBoard.utils";
@@ -17,17 +21,14 @@ import {
   renderableBlockList,
   translateBlockPosition,
 } from "$utils/block/block";
-import { Wrapper, Board, Square } from "./GameBoard.parts";
-import { BlockVectors } from "$types/globalTypes";
 import { handleBlockSettle } from "$utils/handleBlockSettle";
-import { GameBoardProps } from "./GameBoard.types";
-import GameOver from "$components/GameOver/GameOver";
+import * as P from "./GameBoard.parts";
 
 export default function GameBoard({
   numRowsFilled,
-  isGameOver,
   setNumRowsFilled,
-  setIsGameOver,
+  isRunning,
+  setIsRunning,
 }: GameBoardProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
@@ -73,7 +74,7 @@ export default function GameBoard({
     return (fall: number, spawnBlock: () => void) => {
       if (isGameOver) {
         clearInterval(fall);
-        setIsGameOver(true);
+        setIsRunning(false);
         dialogRef.current?.showModal();
       }
       handleBlockSettle({
@@ -94,7 +95,7 @@ export default function GameBoard({
     setHookLocation,
     canMoveLeft: canMove.left,
     canMoveRight: canMove.right,
-    isGameOver,
+    isRunning,
   });
 
   const fallInterval = calculateFallInterval(
@@ -111,32 +112,41 @@ export default function GameBoard({
     setStaticBlocksMatrix,
     canMoveDown: canMove.down,
     fallInterval,
-    isGameOver,
-    // setIsGameOver,
+    isRunning,
   });
 
-  function renderSquares() {
-    const componentArray = [];
-    const readyToRender = createReadyToRender(
-      staticBlocksMatrix,
-      blockVectors.current
-    );
+  const restartGame = useCallback(
+    function startGame(e: KeyboardEvent) {
+      if (e.key !== " " || isRunning) return;
 
-    for (let i = 0; i < 200; i++) {
-      componentArray.push(
-        <Square
-          key={Math.random()}
-          $filled={readyToRender[Math.floor(i / 10)][i % 10]}
-        />
+      setIsRunning(true);
+      dialogRef?.current?.close();
+      setStaticBlocksMatrix(
+        createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
       );
-    }
-    return componentArray;
-  }
+      setHookLocation(SPAWN_LOCATION);
+      setActiveBlock(getRenderableBlock(renderableBlockList));
+      setNumRowsFilled(0);
+    },
+    [isRunning, setIsRunning, setNumRowsFilled]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", restartGame);
+
+    return () => document.removeEventListener("keydown", restartGame);
+  }, [restartGame]);
+
+  const renderableMatrix = renderSquares(
+    staticBlocksMatrix,
+    blockVectors.current
+  );
 
   return (
-    <Wrapper>
-      <Board>{renderSquares()}</Board>
+    <P.Wrapper>
+      {!isRunning && <HowToStart />}
+      <P.Board>{renderableMatrix}</P.Board>
       {createPortal(<GameOver ref={dialogRef} />, document.body)}
-    </Wrapper>
+    </P.Wrapper>
   );
 }

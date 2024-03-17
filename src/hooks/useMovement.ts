@@ -10,14 +10,14 @@ interface useMovementProps {
   setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
   canMoveLeft: boolean;
   canMoveRight: boolean;
-  isGameOver: boolean;
+  isRunning: boolean;
 }
 
 export default function useMovement({
   setHookLocation,
   canMoveLeft,
   canMoveRight,
-  isGameOver,
+  isRunning,
 }: useMovementProps) {
   const [speedupFactor, setSpeedupFactor] = useState(DEFAULT_SPEEDUP_FACTOR);
   const [isDown, setIsDown] = useState(false);
@@ -77,7 +77,7 @@ export default function useMovement({
   );
 
   useEffect(() => {
-    if (isGameOver) return;
+    if (!isRunning) return;
 
     window.addEventListener("keydown", keyboardListener);
     window.addEventListener("keyup", keyboardListener);
@@ -86,7 +86,7 @@ export default function useMovement({
       window.removeEventListener("keydown", keyboardListener);
       window.removeEventListener("keyup", keyboardListener);
     };
-  }, [keyboardListener, isGameOver]);
+  }, [keyboardListener, isRunning]);
 
   return speedupFactor;
 }
