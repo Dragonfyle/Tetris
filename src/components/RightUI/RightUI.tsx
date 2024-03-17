@@ -2,5 +2,5 @@
 import UI from "$components/UI/UI";
 
 export default function RightUI() {
-  return <UI justify="flex-end" />;
+  return <UI justify="flex-start" />;
 }

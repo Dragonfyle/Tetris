@@ -5,6 +5,8 @@ import RightUI from "$components/RightUI/RightUI";
 import { MainCanvasProps } from "./MainCanvas.types";
 
 export default function MainCanvas({
+  isGameOver,
+  setIsGameOver,
   score,
   numRowsFilled,
   setNumRowsFilled,
@@ -14,7 +16,9 @@ export default function MainCanvas({
       <LeftUI score={score} />
       <GameBoard
         numRowsFilled={numRowsFilled}
+        isGameOver={isGameOver}
         setNumRowsFilled={setNumRowsFilled}
+        setIsGameOver={setIsGameOver}
       ></GameBoard>
       <RightUI />
     </P.Wrapper>

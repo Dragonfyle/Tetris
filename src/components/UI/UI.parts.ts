@@ -7,7 +7,6 @@ export const Wrapper = styled.div<{ $justify: string }>`
   align-items: center;
   height: 700px;
   padding: 30px;
-  background-color: #394;
 `;
 
 export const StatsColumn = styled.section`
@@ -15,5 +14,5 @@ export const StatsColumn = styled.section`
   justify-content: center;
   width: 150px;
   height: 85%;
-  background-color: #444;
+  background-color: gray;
 `;

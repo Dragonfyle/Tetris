@@ -5,7 +5,7 @@ import { LeftUIProps } from "./LeftUI.types";
 
 export default function LeftUI({ score }: LeftUIProps) {
   return (
-    <UI justify={"flex-start"}>
+    <UI justify={"flex-end"}>
       <Score score={score} />
     </UI>
   );

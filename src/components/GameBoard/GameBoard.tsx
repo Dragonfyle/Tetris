@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { BOARD_DIMENSIONS } from "$config/board";
 import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
 import useMovement from "$hooks/useMovement";
@@ -10,6 +11,7 @@ import {
   calculateFallInterval,
   createReadyToRender,
   getMovePossibilities,
+  isOnBoard,
 } from "./GameBoard.utils";
 import {
   renderableBlockList,
@@ -19,11 +21,15 @@ import { Wrapper, Board, Square } from "./GameBoard.parts";
 import { BlockVectors } from "$types/globalTypes";
 import { handleBlockSettle } from "$utils/handleBlockSettle";
 import { GameBoardProps } from "./GameBoard.types";
+import GameOver from "$components/GameOver/GameOver";
 
 export default function GameBoard({
   numRowsFilled,
+  isGameOver,
   setNumRowsFilled,
+  setIsGameOver,
 }: GameBoardProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
@@ -61,20 +67,34 @@ export default function GameBoard({
     [setHookLocation]
   );
 
-  function handleEndFall() {
-    handleBlockSettle({
-      blockVectors: blockVectors.current,
-      staticBlocksMatrix,
-      setStaticBlocksMatrix,
-      setNumRowsFilled,
-    });
-    resetHookLocation();
+  function handleEndFall(blockVectors: BlockVectors) {
+    const isGameOver = blockVectors.some(([y, x]) => !isOnBoard([y, x]));
+
+    return (fall: number, spawnBlock: () => void) => {
+      if (isGameOver) {
+        clearInterval(fall);
+        setIsGameOver(true);
+        dialogRef.current?.showModal();
+      }
+      handleBlockSettle({
+        blockVectors: blockVectors,
+        staticBlocksMatrix,
+        setStaticBlocksMatrix,
+        setNumRowsFilled,
+      });
+      spawnBlock();
+
+      resetHookLocation();
+    };
   }
+
+  const endFallHandler = handleEndFall(blockVectors.current);
 
   const speedupFactor = useMovement({
     setHookLocation,
     canMoveLeft: canMove.left,
     canMoveRight: canMove.right,
+    isGameOver,
   });
 
   const fallInterval = calculateFallInterval(
@@ -84,13 +104,15 @@ export default function GameBoard({
   );
 
   useFallingBlock({
-    handleEndFall,
+    endFallHandler,
     setActiveBlock,
     setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     canMoveDown: canMove.down,
     fallInterval,
+    isGameOver,
+    // setIsGameOver,
   });
 
   function renderSquares() {
@@ -114,6 +136,7 @@ export default function GameBoard({
   return (
     <Wrapper>
       <Board>{renderSquares()}</Board>
+      {createPortal(<GameOver ref={dialogRef} />, document.body)}
     </Wrapper>
   );
 }
