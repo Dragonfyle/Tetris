@@ -18,12 +18,15 @@ import {
 import { Wrapper, Board, Square } from "./GameBoard.parts";
 import { BlockVectors } from "$types/globalTypes";
 import { handleBlockSettle } from "$utils/handleBlockSettle";
+import { GameBoardProps } from "./GameBoard.types";
 
-export default function GameBoard() {
+export default function GameBoard({
+  numRowsFilled,
+  setNumRowsFilled,
+}: GameBoardProps) {
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
-  const [numRowsFilled, setNumRowsFilled] = useState(0);
   const [activeBlock, setActiveBlock] = useState(
     getRenderableBlock(renderableBlockList)
   );
@@ -79,7 +82,6 @@ export default function GameBoard() {
     speedupFactor,
     numRowsFilled
   );
-  console.log(fallInterval);
 
   useFallingBlock({
     handleEndFall,

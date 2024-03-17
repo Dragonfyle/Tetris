@@ -1,9 +1,6 @@
 import * as P from "./Score.parts";
+import { ScoreProps } from "./Score.types";
 
-interface ScoreProps {
-  children: string;
-}
-
-export default function Score({ children }: ScoreProps) {
-  return <P.ScoreWrapper>{children}</P.ScoreWrapper>;
+export default function Score({ score }: ScoreProps) {
+  return <P.ScoreWrapper>{score}</P.ScoreWrapper>;
 }

@@ -9,6 +9,7 @@ import {
 } from "$types/typeCollection";
 import { BOARD_EDGE } from "$config/board";
 import { MIN_INTERVAL } from "$config/initialSettings";
+import { GetPositionStatus } from "./GameBoard.types";
 
 function isOnBoard([y, x]: Vector) {
   return (
@@ -91,12 +92,6 @@ function createReadyToRender(
 
   return readyToRender;
 }
-
-type GetPositionStatus = (
-  directions: MoveDirection[],
-  blockPosition: BlockVectors,
-  staticBlocksMatrix: BinaryMatrix
-) => PositionStatuses;
 
 const getMovePossibilities: GetPositionStatus = (
   directions,
