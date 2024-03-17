@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import {
   BinaryMatrix,
   Vector,
@@ -16,7 +16,8 @@ interface FallingBlockProps {
   setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
   canMoveDown: boolean;
   fallInterval: number;
-  handleEndFall: () => void;
+  endFallHandler: (fall: number, spawnBlock: () => void) => void;
+  isGameOver: boolean;
 }
 
 const MIN_INTERVAL = 0;
@@ -28,7 +29,8 @@ export default function useFallingBlock({
   setStaticBlocksMatrix,
   canMoveDown,
   fallInterval,
-  handleEndFall,
+  endFallHandler,
+  isGameOver,
 }: FallingBlockProps) {
   const passedIntervalTime = useRef(0);
   const intervalStartTimestamp = useRef(0);
@@ -55,8 +57,7 @@ export default function useFallingBlock({
         if (canMoveDown) {
           moveBlockByOne(setHookLocation, "down");
         } else {
-          handleEndFall();
-          spawnBlock();
+          fall.current && endFallHandler(fall.current, spawnBlock);
         }
       }, Math.max(MIN_INTERVAL, fallInterval - passedIntervalTime.current));
     },
@@ -67,16 +68,18 @@ export default function useFallingBlock({
       spawnBlock,
       staticBlocksMatrix,
       fallInterval,
-      handleEndFall,
+      endFallHandler,
     ]
   );
 
   useEffect(() => {
+    if (isGameOver) return;
+
     handleFall();
 
     return () => {
       passedIntervalTime.current = Date.now() - intervalStartTimestamp.current;
       clearInterval(fall.current);
     };
-  }, [fall, fallInterval, handleFall]);
+  }, [fall, fallInterval, handleFall, isGameOver]);
 }

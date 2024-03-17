@@ -13,14 +13,14 @@ import { GetPositionStatus } from "./GameBoard.types";
 
 function isOnBoard([y, x]: Vector) {
   return (
-    y > BOARD_EDGE.TOP &&
+    y >= BOARD_EDGE.TOP &&
     y <= BOARD_EDGE.BOTTOM &&
     x >= BOARD_EDGE.LEFT &&
     x <= BOARD_EDGE.RIGHT
   );
 }
 
-function getAdjacentPosition(
+function isAdjacentPositionOccupied(
   direction: MoveDirection,
   staticBlocksMatrix: BinaryMatrix,
   [y, x]: Vector
@@ -35,16 +35,13 @@ function getAdjacentPosition(
   }
 }
 
-function isPositionOccupied(
+function canMoveToAdjacent(
   direction: MoveDirection,
   blockPosition: BlockVectors,
   staticBlocksMatrix: BinaryMatrix
 ) {
   return blockPosition.some(([y, x]) => {
-    if (
-      isOnBoard([y, x]) &&
-      getAdjacentPosition(direction, staticBlocksMatrix, [y, x])
-    ) {
+    if (isAdjacentPositionOccupied(direction, staticBlocksMatrix, [y, x])) {
       return true;
     }
   });
@@ -103,7 +100,7 @@ const getMovePossibilities: GetPositionStatus = (
   for (const direction of directions) {
     const canMove =
       !isBoardEdge(direction, blockPosition) &&
-      !isPositionOccupied(direction, blockPosition, staticBlocksMatrix);
+      !canMoveToAdjacent(direction, blockPosition, staticBlocksMatrix);
 
     result[direction] = canMove;
   }
@@ -124,8 +121,8 @@ function calculateFallInterval(
 
 export {
   isOnBoard,
-  getAdjacentPosition,
-  isPositionOccupied,
+  isAdjacentPositionOccupied,
+  canMoveToAdjacent,
   isBoardEdge,
   isRotationPossible,
   pruneRow,

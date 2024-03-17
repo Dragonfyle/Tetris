@@ -6,5 +6,5 @@ export const Wrapper = styled.div`
   justify-content: space-around;
   height: 100vh;
   width: 100vw;
-  background-color: #459;
+  background-color: #282828;
 `;
