@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { BlockVectors } from "$types/globalTypes";
 import { GameBoardProps } from "./GameBoard.types";
 import { BOARD_DIMENSIONS } from "$config/board";
@@ -7,8 +6,6 @@ import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
 import useMovement from "$hooks/useMovement";
 import useFallingBlock from "$hooks/useFallingBlock";
 import useRotate from "$hooks/useRotate";
-import GameOver from "$components/GameOver/GameOver";
-import HowToStart from "$components/HowToStart/HowToStart";
 import getRenderableBlock from "$utils/getRandomBlock";
 import { createMatrix } from "$utils/matrix";
 import { renderSquares } from "$utils/renderSquares";
@@ -23,6 +20,7 @@ import {
 } from "$utils/block/block";
 import { handleBlockSettle } from "$utils/handleBlockSettle";
 import * as P from "./GameBoard.parts";
+import Modal from "$components/Modal/Modal";
 
 export default function GameBoard({
   numRowsFilled,
@@ -31,6 +29,7 @@ export default function GameBoard({
   setIsRunning,
 }: GameBoardProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const isFirstGame = useRef(true);
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
@@ -115,12 +114,16 @@ export default function GameBoard({
     isRunning,
   });
 
-  const restartGame = useCallback(
+  const startGame = useCallback(
     function startGame(e: KeyboardEvent) {
       if (e.key !== " " || isRunning) return;
 
-      setIsRunning(true);
+      isFirstGame.current = false;
       dialogRef?.current?.close();
+      setIsRunning(true);
+
+      if (isFirstGame.current) return;
+
       setStaticBlocksMatrix(
         createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
       );
@@ -132,10 +135,16 @@ export default function GameBoard({
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", restartGame);
+    if (isRunning) return;
 
-    return () => document.removeEventListener("keydown", restartGame);
-  }, [restartGame]);
+    document.addEventListener("keydown", startGame);
+
+    return () => document.removeEventListener("keydown", startGame);
+  }, [startGame, isRunning]);
+
+  useEffect(() => {
+    dialogRef.current?.showModal();
+  }, []);
 
   const renderableMatrix = renderSquares(
     staticBlocksMatrix,
@@ -144,9 +153,8 @@ export default function GameBoard({
 
   return (
     <P.Wrapper>
-      {!isRunning && <HowToStart />}
       <P.Board>{renderableMatrix}</P.Board>
-      {createPortal(<GameOver ref={dialogRef} />, document.body)}
+      <Modal ref={dialogRef} isFirstGame={isFirstGame.current} />
     </P.Wrapper>
   );
 }
