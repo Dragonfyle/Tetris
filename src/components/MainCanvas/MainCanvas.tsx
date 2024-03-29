@@ -13,19 +13,16 @@ export default function MainCanvas({
 }: MainCanvasProps) {
   return (
     <P.Canvas>
-      <P.Flexbox>
-        <P.ButtonWrapper></P.ButtonWrapper>
-        <P.Wrapper>
-          <LeftUI score={score} />
-          <GameBoard
-            numRowsFilled={numRowsFilled}
-            setNumRowsFilled={setNumRowsFilled}
-            isRunning={isRunning}
-            setIsRunning={setIsRunning}
-          ></GameBoard>
-          <RightUI />
-        </P.Wrapper>
-      </P.Flexbox>
+      <P.ContentWrapper>
+        <LeftUI score={score} />
+        <GameBoard
+          numRowsFilled={numRowsFilled}
+          setNumRowsFilled={setNumRowsFilled}
+          isRunning={isRunning}
+          setIsRunning={setIsRunning}
+        ></GameBoard>
+        <RightUI />
+      </P.ContentWrapper>
     </P.Canvas>
   );
 }

@@ -103,6 +103,7 @@ export default function GameBoard({
     numRowsFilled
   );
 
+  console.log(staticBlocksMatrix);
   useFallingBlock({
     endFallHandler,
     setActiveBlock,
