@@ -1,4 +1,6 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { BlockVectors } from "$types/globalTypes";
+import { GameBoardProps } from "./GameBoard.types";
 import { BOARD_DIMENSIONS } from "$config/board";
 import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
 import useMovement from "$hooks/useMovement";
@@ -6,24 +8,31 @@ import useFallingBlock from "$hooks/useFallingBlock";
 import useRotate from "$hooks/useRotate";
 import getRenderableBlock from "$utils/getRandomBlock";
 import { createMatrix } from "$utils/matrix";
+import { renderSquares } from "$utils/renderSquares";
 import {
   calculateFallInterval,
-  createReadyToRender,
   getMovePossibilities,
+  isOnBoard,
 } from "./GameBoard.utils";
 import {
   renderableBlockList,
   translateBlockPosition,
 } from "$utils/block/block";
-import { Wrapper, Board, Square } from "./GameBoard.parts";
-import { BlockVectors } from "$types/globalTypes";
 import { handleBlockSettle } from "$utils/handleBlockSettle";
+import * as P from "./GameBoard.parts";
+import Modal from "$components/Modal/Modal";
 
-export default function GameBoard() {
+export default function GameBoard({
+  numRowsFilled,
+  setNumRowsFilled,
+  isRunning,
+  setIsRunning,
+}: GameBoardProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const isFirstGame = useRef(true);
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
-  const [numRowsFilled, setNumRowsFilled] = useState(0);
   const [activeBlock, setActiveBlock] = useState(
     getRenderableBlock(renderableBlockList)
   );
@@ -58,20 +67,34 @@ export default function GameBoard() {
     [setHookLocation]
   );
 
-  function handleEndFall() {
-    handleBlockSettle({
-      blockVectors: blockVectors.current,
-      staticBlocksMatrix,
-      setStaticBlocksMatrix,
-      setNumRowsFilled,
-    });
-    resetHookLocation();
+  function handleEndFall(blockVectors: BlockVectors) {
+    const isGameOver = blockVectors.some(([y, x]) => !isOnBoard([y, x]));
+
+    return (fall: number, spawnBlock: () => void) => {
+      if (isGameOver) {
+        clearInterval(fall);
+        setIsRunning(false);
+        dialogRef.current?.showModal();
+      }
+      handleBlockSettle({
+        blockVectors: blockVectors,
+        staticBlocksMatrix,
+        setStaticBlocksMatrix,
+        setNumRowsFilled,
+      });
+      spawnBlock();
+
+      resetHookLocation();
+    };
   }
+
+  const endFallHandler = handleEndFall(blockVectors.current);
 
   const speedupFactor = useMovement({
     setHookLocation,
     canMoveLeft: canMove.left,
     canMoveRight: canMove.right,
+    isRunning,
   });
 
   const fallInterval = calculateFallInterval(
@@ -79,39 +102,60 @@ export default function GameBoard() {
     speedupFactor,
     numRowsFilled
   );
-  console.log(fallInterval);
 
+  console.log(staticBlocksMatrix);
   useFallingBlock({
-    handleEndFall,
+    endFallHandler,
     setActiveBlock,
     setHookLocation,
     staticBlocksMatrix,
     setStaticBlocksMatrix,
     canMoveDown: canMove.down,
     fallInterval,
+    isRunning,
   });
 
-  function renderSquares() {
-    const componentArray = [];
-    const readyToRender = createReadyToRender(
-      staticBlocksMatrix,
-      blockVectors.current
-    );
+  const startGame = useCallback(
+    function startGame(e: KeyboardEvent) {
+      if (e.key !== " " || isRunning) return;
 
-    for (let i = 0; i < 200; i++) {
-      componentArray.push(
-        <Square
-          key={Math.random()}
-          $filled={readyToRender[Math.floor(i / 10)][i % 10]}
-        />
+      isFirstGame.current = false;
+      dialogRef?.current?.close();
+      setIsRunning(true);
+
+      if (isFirstGame.current) return;
+
+      setStaticBlocksMatrix(
+        createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
       );
-    }
-    return componentArray;
-  }
+      setHookLocation(SPAWN_LOCATION);
+      setActiveBlock(getRenderableBlock(renderableBlockList));
+      setNumRowsFilled(0);
+    },
+    [isRunning, setIsRunning, setNumRowsFilled]
+  );
+
+  useEffect(() => {
+    if (isRunning) return;
+
+    document.addEventListener("keydown", startGame);
+
+    return () => document.removeEventListener("keydown", startGame);
+  }, [startGame, isRunning]);
+
+  useEffect(() => {
+    dialogRef.current?.showModal();
+  }, []);
+
+  const renderableMatrix = renderSquares(
+    staticBlocksMatrix,
+    blockVectors.current
+  );
 
   return (
-    <Wrapper>
-      <Board>{renderSquares()}</Board>
-    </Wrapper>
+    <P.Wrapper>
+      <P.Board>{renderableMatrix}</P.Board>
+      <Modal ref={dialogRef} isFirstGame={isFirstGame.current} />
+    </P.Wrapper>
   );
 }
