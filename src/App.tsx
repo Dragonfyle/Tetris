@@ -4,7 +4,7 @@ import MainCanvas from "$components/MainCanvas/MainCanvas";
 import { calculateScore } from "$utils/score";
 
 function App() {
-  const [isGameOver, setIsGameOver] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
   const [numRowsFilled, setNumRowsFilled] = useState(0);
 
   const score = calculateScore(numRowsFilled);
@@ -13,11 +13,11 @@ function App() {
     <>
       <GlobalStyles />
       <MainCanvas
-        isGameOver={isGameOver}
-        setIsGameOver={setIsGameOver}
         score={score}
         numRowsFilled={numRowsFilled}
         setNumRowsFilled={setNumRowsFilled}
+        isRunning={isRunning}
+        setIsRunning={setIsRunning}
       ></MainCanvas>
     </>
   );

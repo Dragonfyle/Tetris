@@ -17,7 +17,7 @@ interface FallingBlockProps {
   canMoveDown: boolean;
   fallInterval: number;
   endFallHandler: (fall: number, spawnBlock: () => void) => void;
-  isGameOver: boolean;
+  isRunning: boolean;
 }
 
 const MIN_INTERVAL = 0;
@@ -30,7 +30,7 @@ export default function useFallingBlock({
   canMoveDown,
   fallInterval,
   endFallHandler,
-  isGameOver,
+  isRunning,
 }: FallingBlockProps) {
   const passedIntervalTime = useRef(0);
   const intervalStartTimestamp = useRef(0);
@@ -73,7 +73,7 @@ export default function useFallingBlock({
   );
 
   useEffect(() => {
-    if (isGameOver) return;
+    if (!isRunning) return;
 
     handleFall();
 
@@ -81,5 +81,5 @@ export default function useFallingBlock({
       passedIntervalTime.current = Date.now() - intervalStartTimestamp.current;
       clearInterval(fall.current);
     };
-  }, [fall, fallInterval, handleFall, isGameOver]);
+  }, [fall, fallInterval, handleFall, isRunning]);
 }

@@ -1,10 +1,15 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
+export const Canvas = styled.div`
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-around;
-  height: 100vh;
-  width: 100vw;
   background-color: #282828;
+  width: 100vw;
+  height: 100vh;
+`;
+
+export const ContentWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1.4fr 3fr 1.4fr;
 `;
