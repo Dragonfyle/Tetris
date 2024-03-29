@@ -27,6 +27,8 @@ export default function GameBoard({
   setNumRowsFilled,
   isRunning,
   setIsRunning,
+  nextBlock,
+  setNextBlock,
 }: GameBoardProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const isFirstGame = useRef(true);
@@ -37,7 +39,7 @@ export default function GameBoard({
     getRenderableBlock(renderableBlockList)
   );
   const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
-  const activeRotationIdx = useRotate({
+  const { activeRotationIdx, resetRotation } = useRotate({
     activeBlock,
     staticBlocksMatrix,
     hookLocation,
@@ -103,7 +105,6 @@ export default function GameBoard({
     numRowsFilled
   );
 
-  console.log(staticBlocksMatrix);
   useFallingBlock({
     endFallHandler,
     setActiveBlock,
@@ -113,6 +114,9 @@ export default function GameBoard({
     canMoveDown: canMove.down,
     fallInterval,
     isRunning,
+    resetRotation,
+    nextBlock,
+    setNextBlock,
   });
 
   const startGame = useCallback(
@@ -130,9 +134,10 @@ export default function GameBoard({
       );
       setHookLocation(SPAWN_LOCATION);
       setActiveBlock(getRenderableBlock(renderableBlockList));
+      resetRotation();
       setNumRowsFilled(0);
     },
-    [isRunning, setIsRunning, setNumRowsFilled]
+    [isRunning, setIsRunning, setNumRowsFilled, resetRotation]
   );
 
   useEffect(() => {

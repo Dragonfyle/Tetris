@@ -6,9 +6,5 @@ interface UIProps {
 }
 
 export default function UI({ children, justify }: UIProps) {
-  return (
-    <P.Wrapper $justify={justify}>
-      <P.StatsColumn>{children}</P.StatsColumn>
-    </P.Wrapper>
-  );
+  return <P.UIColumn $justify={justify}>{children}</P.UIColumn>;
 }
