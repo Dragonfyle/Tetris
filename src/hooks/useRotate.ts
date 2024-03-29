@@ -54,6 +54,10 @@ export default function useRotate({
     ),
   };
 
+  const resetRotation = useCallback(() => {
+    setActiveRotationIdx(0);
+  }, []);
+
   const keyboardListener = useCallback(
     (e: KeyboardEvent) => {
       const supportedKeys = {
@@ -92,5 +96,5 @@ export default function useRotate({
     };
   }, [keyboardListener]);
 
-  return activeRotationIdx;
+  return { activeRotationIdx, resetRotation };
 }

@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const ScoreWrapper = styled.div`
   display: flex;
+  justify-content: center;
   font-family: "Tektur", sans-serif;
   font-size: 2rem;
   color: oldlace;
