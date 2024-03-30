@@ -12,6 +12,7 @@ export default function LeftUI({ score, nextBlock }: LeftUIProps) {
         <Score score={score} />
         <NextBlock
           nextBlockVectors={nextBlock.rotations[INITIAL_ROTATION_IDX]}
+          colorCode={nextBlock.colorCode}
         />
       </P.ContentWrapper>
     </UI>

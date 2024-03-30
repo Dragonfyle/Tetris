@@ -6,6 +6,7 @@ import {
   BlockDefinitions,
   RenderableBlockList,
   BlockName,
+  BlockColorCode,
 } from "$types/typeCollection";
 
 function findBlockCenter(blockMatrixWidth: number) {
@@ -72,6 +73,7 @@ function transformDefinitions(blockDefinitions: BlockDefinitions) {
     renderableBlockDefinitions[key as BlockName] = {
       rotations: getBlockRotationList(value.SHAPE),
       spawnHook: value.SPAWN_HOOK as Vector,
+      colorCode: value.COLOR_CODE as BlockColorCode,
     };
   });
 

@@ -1,7 +1,7 @@
 import {
-  BinaryElement,
-  BinaryRow,
-  BinaryMatrix,
+  BlockColorCode,
+  ColorCodeRow,
+  ColorCodeMatrix,
   Vector,
   BlockVectors,
   MoveDirection,
@@ -10,6 +10,7 @@ import {
 import { BOARD_EDGE } from "$config/board";
 import { MIN_INTERVAL } from "$config/initialSettings";
 import { GetPositionStatus } from "./GameBoard.types";
+import { copyMatrix } from "$utils/matrix";
 
 function isOnBoard([y, x]: Vector) {
   return (
@@ -22,7 +23,7 @@ function isOnBoard([y, x]: Vector) {
 
 function isAdjacentPositionOccupied(
   direction: MoveDirection,
-  staticBlocksMatrix: BinaryMatrix,
+  staticBlocksMatrix: ColorCodeMatrix,
   [y, x]: Vector
 ) {
   switch (direction) {
@@ -38,7 +39,7 @@ function isAdjacentPositionOccupied(
 function canMoveToAdjacent(
   direction: MoveDirection,
   blockPosition: BlockVectors,
-  staticBlocksMatrix: BinaryMatrix
+  staticBlocksMatrix: ColorCodeMatrix
 ) {
   return blockPosition.some(([y, x]) => {
     if (isAdjacentPositionOccupied(direction, staticBlocksMatrix, [y, x])) {
@@ -60,15 +61,15 @@ function isBoardEdge(direction: MoveDirection, blockPosition: BlockVectors) {
 
 function isRotationPossible(
   intendedBlockPosition: BlockVectors,
-  staticBlocksMatrix: BinaryMatrix
+  staticBlocksMatrix: ColorCodeMatrix
 ) {
   return intendedBlockPosition.every(
     ([y, x]) => isOnBoard([y, x]) && !staticBlocksMatrix[y][x]
   );
 }
 
-function pruneRow(row: BinaryRow) {
-  if (!row.every((column: BinaryElement) => column)) {
+function pruneRow(row: ColorCodeRow) {
+  if (!row.every((column: BlockColorCode) => column)) {
     return row;
   } else {
     return null;
@@ -76,15 +77,17 @@ function pruneRow(row: BinaryRow) {
 }
 
 function mergeActiveBlockWithMatrix(
-  staticBlocksMatrix: BinaryMatrix,
-  blockPosition: BlockVectors
+  staticBlocksMatrix: ColorCodeMatrix,
+  blockPosition: BlockVectors,
+  colorCode: BlockColorCode
 ) {
-  const readyToRender = JSON.parse(JSON.stringify(staticBlocksMatrix));
+  const readyToRender = copyMatrix(staticBlocksMatrix);
+
   blockPosition.map(([y, x]) => {
     if (x < 0 || y < 0) {
       return;
     }
-    readyToRender[y][x] = true;
+    readyToRender[y][x] = colorCode;
   });
 
   return readyToRender;
@@ -115,7 +118,7 @@ function calculateFallInterval(
 ) {
   return Math.max(
     MIN_INTERVAL,
-    initialInterval / speedupFactor - numRowsFilled * 3
+    initialInterval / speedupFactor - numRowsFilled * 5
   );
 }
 

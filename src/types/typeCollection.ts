@@ -1,7 +1,7 @@
 export type {
-  BinaryElement,
-  BinaryRow,
-  BinaryMatrix,
+  BlockColorCode,
+  ColorCodeRow,
+  ColorCodeMatrix,
   KeyOfType,
   MappedKeysAndValues,
   Vector,

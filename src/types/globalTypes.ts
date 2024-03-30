@@ -1,6 +1,8 @@
-type BinaryElement = 0 | 1;
-type BinaryRow = BinaryElement[];
-type BinaryMatrix = BinaryRow[];
+import { BLOCK_COLORS_MAP } from "$config/initialSettings";
+
+type BlockColorCode = keyof typeof BLOCK_COLORS_MAP;
+type ColorCodeRow = BlockColorCode[];
+type ColorCodeMatrix = ColorCodeRow[];
 type KeyOfType<T> = keyof T;
 type MappedKeysAndValues<K extends string, V> = {
   [key in K]: V;
@@ -13,9 +15,8 @@ type RotationDirection = "clockwise" | "counterclockwise";
 type RotationIdx = 0 | 1 | 2 | 3;
 
 export type {
-  BinaryElement,
-  BinaryRow,
-  BinaryMatrix,
+  ColorCodeRow,
+  ColorCodeMatrix,
   KeyOfType,
   MappedKeysAndValues,
   Vector,
@@ -24,4 +25,5 @@ export type {
   RotationDirection,
   RotationIdx,
   PositionStatuses,
+  BlockColorCode,
 };

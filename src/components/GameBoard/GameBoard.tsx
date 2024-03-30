@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BlockVectors } from "$types/globalTypes";
+import { BlockVectors } from "$types/typeCollection";
 import { GameBoardProps } from "./GameBoard.types";
 import { BOARD_DIMENSIONS } from "$config/board";
 import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
@@ -83,6 +83,7 @@ export default function GameBoard({
         staticBlocksMatrix,
         setStaticBlocksMatrix,
         setNumRowsFilled,
+        colorCode: activeBlock.colorCode,
       });
       spawnBlock();
 
@@ -154,7 +155,8 @@ export default function GameBoard({
 
   const renderableMatrix = renderSquares(
     staticBlocksMatrix,
-    blockVectors.current
+    blockVectors.current,
+    activeBlock.colorCode
   );
 
   return (
