@@ -1,24 +1,24 @@
 import styled from "styled-components";
+import { getBlockColor } from "./Square.utils";
+import { StyledSquareProps } from "./Square.types";
 
-export const Square = styled.div<{ $filled: boolean }>`
+export const Square = styled.div<StyledSquareProps>`
   position: relative;
   width: 33px;
   height: 33px;
-  background: ${({ $filled }) =>
-    $filled
-      ? "linear-gradient(130deg, rgba(255,0,0,1) 0%, rgba(250,142,0,1) 47%, rgba(227,152,0,1) 74%)"
-      : "none"};
-  border-radius: 1px;
+  background: ${getBlockColor};
+  border-radius: 6%;
   box-sizing: border-box;
 
   &::before {
     content: "";
-    width: calc(100% - 6px);
-    height: calc(100% - 6px);
+    width: calc(100% - 7px);
+    height: calc(100% - 7px);
     position: absolute;
-    top: 50%;
+    top: 51%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #111;
+    border-radius: 15%;
   }
 `;

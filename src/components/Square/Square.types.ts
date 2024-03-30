@@ -1,5 +1,15 @@
+import { BlockColorCode } from "$types/typeCollection";
+
 interface SquareProps {
-  filled: boolean;
+  colorCode: BlockColorCode;
 }
 
-export type { SquareProps };
+interface getBlockColorProps {
+  $colorCode: BlockColorCode;
+}
+
+interface StyledSquareProps {
+  $colorCode: BlockColorCode;
+}
+
+export type { SquareProps, getBlockColorProps, StyledSquareProps };

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import {
-  BinaryMatrix,
+  ColorCodeMatrix,
   Vector,
   RenderableBlockDefinition,
 } from "$types/typeCollection";
@@ -12,8 +12,8 @@ interface FallingBlockProps {
     React.SetStateAction<RenderableBlockDefinition>
   >;
   setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
-  staticBlocksMatrix: BinaryMatrix;
-  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<BinaryMatrix>>;
+  staticBlocksMatrix: ColorCodeMatrix;
+  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<ColorCodeMatrix>>;
   canMoveDown: boolean;
   fallInterval: number;
   endFallHandler: (fall: number, spawnBlock: () => void) => void;
@@ -62,6 +62,7 @@ export default function useFallingBlock({
         ) {
           return;
         }
+
         if (canMoveDown) {
           moveBlockByOne(setHookLocation, "down");
         } else {

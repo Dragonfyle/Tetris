@@ -5,6 +5,7 @@ import {
   Vector,
   MappedKeysAndValues,
   MoveDirection,
+  BlockColorCode,
 } from "$types/typeCollection";
 
 type BlockDefinition = (0 | 1)[][];
@@ -18,6 +19,7 @@ type RotationsList = BlockVectors[];
 type RenderableBlockDefinition = {
   rotations: RotationsList;
   spawnHook: Vector;
+  colorCode: BlockColorCode;
 };
 
 type RenderableBlockList = MappedKeysAndValues<

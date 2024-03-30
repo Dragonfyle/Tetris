@@ -3,14 +3,14 @@ import { getNextRotation, translateBlockPosition } from "$utils/block/block";
 import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
 import {
   Vector,
-  BinaryMatrix,
+  ColorCodeMatrix,
   RenderableBlockDefinition,
   RotationIdx,
 } from "$types/typeCollection";
 
 interface useRotateProps {
   activeBlock: RenderableBlockDefinition;
-  staticBlocksMatrix: BinaryMatrix;
+  staticBlocksMatrix: ColorCodeMatrix;
   hookLocation: Vector;
 }
 
