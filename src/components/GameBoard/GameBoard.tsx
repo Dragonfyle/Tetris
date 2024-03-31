@@ -21,6 +21,7 @@ import {
 import { handleBlockSettle } from "$utils/handleBlockSettle";
 import * as P from "./GameBoard.parts";
 import Modal from "$components/Modal/Modal";
+import { writeScoreToFirebase } from "$utils/firebaseReadWrite";
 
 export default function GameBoard({
   numRowsFilled,
@@ -29,6 +30,7 @@ export default function GameBoard({
   setIsRunning,
   nextBlock,
   setNextBlock,
+  score,
 }: GameBoardProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const isFirstGame = useRef(true);
@@ -77,6 +79,7 @@ export default function GameBoard({
         clearInterval(fall);
         setIsRunning(false);
         dialogRef.current?.showModal();
+        writeScoreToFirebase(score);
       }
       handleBlockSettle({
         blockVectors: blockVectors,

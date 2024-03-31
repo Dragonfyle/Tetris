@@ -10,6 +10,7 @@ export type {
   RotationDirection,
   RotationIdx,
   PositionStatuses,
+  HighScores,
 } from "$types/globalTypes";
 
 export type {
