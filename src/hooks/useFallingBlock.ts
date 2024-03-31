@@ -19,7 +19,7 @@ interface FallingBlockProps {
   endFallHandler: (fall: number, spawnBlock: () => void) => void;
   isRunning: boolean;
   resetRotation: () => void;
-  nextBlock: RenderableBlockDefinition | undefined;
+  nextBlock: RenderableBlockDefinition;
   setNextBlock: React.Dispatch<React.SetStateAction<RenderableBlockDefinition>>;
 }
 
@@ -43,18 +43,13 @@ export default function useFallingBlock({
   const fall = useRef<undefined | number>(undefined);
 
   const spawnBlock = useCallback(() => {
-    if (!nextBlock) {
-      setNextBlock(getRenderableBlock(renderableBlockList));
-      setActiveBlock(getRenderableBlock(renderableBlockList));
-    } else {
-      setActiveBlock(nextBlock);
-      setNextBlock(getRenderableBlock(renderableBlockList));
-    }
+    setActiveBlock(nextBlock);
+    setNextBlock(getRenderableBlock(renderableBlockList));
   }, [setActiveBlock, nextBlock, setNextBlock]);
 
   const handleFall = useCallback(
     function handleFall() {
-      fall.current = setInterval(() => {
+      fall.current = window.setInterval(() => {
         intervalStartTimestamp.current = Date.now();
         if (
           !staticBlocksMatrix ||

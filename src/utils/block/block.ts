@@ -9,7 +9,7 @@ import {
 import { BLOCK_DEFINITIONS } from "$data/blockData";
 import { transformDefinitions } from "$utils/transformDefinitions";
 
-const INITIAL_ROTATION_IDX = 0;
+const INITIAL_ROTATION_IDX = 0 as RotationIdx;
 
 const ROTATIONS = {
   MIN_IDX: 0 as RotationIdx,

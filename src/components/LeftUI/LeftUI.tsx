@@ -6,6 +6,8 @@ import { INITIAL_ROTATION_IDX } from "$utils/block/block";
 import * as P from "./LeftUI.parts";
 
 export default function LeftUI({ score, nextBlock }: LeftUIProps) {
+  console.log(nextBlock.colorCode);
+
   return (
     <UI justify={"center"}>
       <P.ContentWrapper>

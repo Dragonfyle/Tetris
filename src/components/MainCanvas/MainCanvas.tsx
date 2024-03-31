@@ -3,10 +3,15 @@ import GameBoard from "$components/GameBoard/GameBoard";
 import LeftUI from "$components/LeftUI/LeftUI";
 import RightUI from "$components/RightUI/RightUI";
 import { MainCanvasProps } from "./MainCanvas.types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import getRenderableBlock from "$utils/getRandomBlock";
 import { renderableBlockList } from "$utils/block/block";
-import { readScoresFromFirebase } from "$utils/firebaseReadWrite";
+import {
+  DocumentData,
+  doc,
+  getFirestore,
+  onSnapshot,
+} from "firebase/firestore";
 
 export default function MainCanvas({
   score,
@@ -19,19 +24,38 @@ export default function MainCanvas({
   const [nextBlock, setNextBlock] = useState(
     getRenderableBlock(renderableBlockList)
   );
+  console.log(nextBlock.colorCode);
+  const db = useRef(getFirestore());
+
+  function updateScores(newScores: DocumentData | undefined) {
+    if (!newScores) return;
+
+    const values: number[] = Object.values(newScores);
+    setHighScores(values);
+  }
 
   useEffect(() => {
-    async function fetchScores() {
-      try {
-        const scores = await readScoresFromFirebase();
-        setHighScores(Object.values(scores));
-      } catch (error) {
-        console.error("Error fetching scores:", error);
-      }
-    }
+    const scoresRef = doc(db.current, "highScores", "top10");
+    const unsub = onSnapshot(scoresRef, (doc) => {
+      updateScores(doc.data());
+    });
 
-    fetchScores();
-  });
+    // async function fetchScores() {
+    //   try {
+    //     const response = await readScoresFromFirebase();
+    //     const scores = Object.values(response);
+
+    //     setHighScores(scores);
+    //   } catch (error) {
+    //     console.error("Error fetching scores:", error);
+    //   }
+    // }
+
+    // fetchScores();
+
+    return () => unsub();
+  }, []);
+  console.log(nextBlock.colorCode);
 
   return (
     <P.Canvas>
@@ -45,7 +69,7 @@ export default function MainCanvas({
           nextBlock={nextBlock}
           setNextBlock={setNextBlock}
           score={score}
-        ></GameBoard>
+        />
         <RightUI highScores={highScores} />
       </P.ContentWrapper>
     </P.Canvas>

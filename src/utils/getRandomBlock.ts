@@ -10,6 +10,7 @@ function getRandomNumber(low: number = 0, high: number = 1) {
 }
 
 function getRandomBlockName(blockDefinitions: BlockDefinitions) {
+  console.log("generating");
   const blockNames = Object.keys(blockDefinitions) as BlockName[];
   const numBlocks = blockNames.length;
   const randomNumber = getRandomNumber(0, numBlocks);
