@@ -12,7 +12,7 @@ interface GameBoardProps {
   setNumRowsFilled: React.Dispatch<React.SetStateAction<number>>;
   isRunning: boolean;
   setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
-  nextBlock: RenderableBlockDefinition | undefined;
+  nextBlock: RenderableBlockDefinition;
   setNextBlock: React.Dispatch<React.SetStateAction<RenderableBlockDefinition>>;
   score: number;
 }

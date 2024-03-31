@@ -37,9 +37,8 @@ export default function GameBoard({
   const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
     createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
   );
-  const [activeBlock, setActiveBlock] = useState(
-    getRenderableBlock(renderableBlockList)
-  );
+  const [activeBlock, setActiveBlock] = useState(nextBlock);
+  console.log(nextBlock.colorCode);
   const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
   const { activeRotationIdx, resetRotation } = useRotate({
     activeBlock,

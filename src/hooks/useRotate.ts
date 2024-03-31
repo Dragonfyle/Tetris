@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { getNextRotation, translateBlockPosition } from "$utils/block/block";
+import {
+  INITIAL_ROTATION_IDX,
+  getNextRotation,
+  translateBlockPosition,
+} from "$utils/block/block";
 import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
 import {
   Vector,
   ColorCodeMatrix,
   RenderableBlockDefinition,
-  RotationIdx,
 } from "$types/typeCollection";
 
 interface useRotateProps {
@@ -20,7 +23,8 @@ export default function useRotate({
   hookLocation,
 }: useRotateProps) {
   const [isDown, setIsDown] = useState(false);
-  const [activeRotationIdx, setActiveRotationIdx] = useState(0 as RotationIdx);
+  const [activeRotationIdx, setActiveRotationIdx] =
+    useState(INITIAL_ROTATION_IDX);
 
   const nextRotationIdx = {
     clockwise: getNextRotation("clockwise", activeRotationIdx),
