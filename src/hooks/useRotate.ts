@@ -3,14 +3,14 @@ import { getNextRotation, translateBlockPosition } from "$utils/block/block";
 import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
 import {
   Vector,
-  BinaryMatrix,
+  ColorCodeMatrix,
   RenderableBlockDefinition,
   RotationIdx,
 } from "$types/typeCollection";
 
 interface useRotateProps {
   activeBlock: RenderableBlockDefinition;
-  staticBlocksMatrix: BinaryMatrix;
+  staticBlocksMatrix: ColorCodeMatrix;
   hookLocation: Vector;
 }
 
@@ -54,6 +54,10 @@ export default function useRotate({
     ),
   };
 
+  const resetRotation = useCallback(() => {
+    setActiveRotationIdx(0);
+  }, []);
+
   const keyboardListener = useCallback(
     (e: KeyboardEvent) => {
       const supportedKeys = {
@@ -92,5 +96,5 @@ export default function useRotate({
     };
   }, [keyboardListener]);
 
-  return activeRotationIdx;
+  return { activeRotationIdx, resetRotation };
 }

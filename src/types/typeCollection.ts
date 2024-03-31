@@ -1,7 +1,7 @@
 export type {
-  BinaryElement,
-  BinaryRow,
-  BinaryMatrix,
+  BlockColorCode,
+  ColorCodeRow,
+  ColorCodeMatrix,
   KeyOfType,
   MappedKeysAndValues,
   Vector,
@@ -10,6 +10,7 @@ export type {
   RotationDirection,
   RotationIdx,
   PositionStatuses,
+  HighScores,
 } from "$types/globalTypes";
 
 export type {

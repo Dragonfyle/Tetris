@@ -1,12 +1,20 @@
-// import * as P from "./LeftUI.parts";
 import UI from "$components/UI/UI";
 import Score from "$components/Score/Score";
 import { LeftUIProps } from "./LeftUI.types";
+import NextBlock from "$components/NextBlock/NextBlock";
+import { INITIAL_ROTATION_IDX } from "$utils/block/block";
+import * as P from "./LeftUI.parts";
 
-export default function LeftUI({ score }: LeftUIProps) {
+export default function LeftUI({ score, nextBlock }: LeftUIProps) {
   return (
     <UI justify={"center"}>
-      <Score score={score} />
+      <P.ContentWrapper>
+        <Score score={score} />
+        <NextBlock
+          nextBlockVectors={nextBlock.rotations[INITIAL_ROTATION_IDX]}
+          colorCode={nextBlock.colorCode}
+        />
+      </P.ContentWrapper>
     </UI>
   );
 }

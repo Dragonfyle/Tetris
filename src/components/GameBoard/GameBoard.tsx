@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BlockVectors } from "$types/globalTypes";
+import { BlockVectors } from "$types/typeCollection";
 import { GameBoardProps } from "./GameBoard.types";
 import { BOARD_DIMENSIONS } from "$config/board";
 import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
@@ -21,12 +21,16 @@ import {
 import { handleBlockSettle } from "$utils/handleBlockSettle";
 import * as P from "./GameBoard.parts";
 import Modal from "$components/Modal/Modal";
+import { writeScoreToFirebase } from "$utils/firebaseReadWrite";
 
 export default function GameBoard({
   numRowsFilled,
   setNumRowsFilled,
   isRunning,
   setIsRunning,
+  nextBlock,
+  setNextBlock,
+  score,
 }: GameBoardProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const isFirstGame = useRef(true);
@@ -37,7 +41,7 @@ export default function GameBoard({
     getRenderableBlock(renderableBlockList)
   );
   const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
-  const activeRotationIdx = useRotate({
+  const { activeRotationIdx, resetRotation } = useRotate({
     activeBlock,
     staticBlocksMatrix,
     hookLocation,
@@ -75,12 +79,14 @@ export default function GameBoard({
         clearInterval(fall);
         setIsRunning(false);
         dialogRef.current?.showModal();
+        writeScoreToFirebase(score);
       }
       handleBlockSettle({
         blockVectors: blockVectors,
         staticBlocksMatrix,
         setStaticBlocksMatrix,
         setNumRowsFilled,
+        colorCode: activeBlock.colorCode,
       });
       spawnBlock();
 
@@ -103,7 +109,6 @@ export default function GameBoard({
     numRowsFilled
   );
 
-  console.log(staticBlocksMatrix);
   useFallingBlock({
     endFallHandler,
     setActiveBlock,
@@ -113,6 +118,9 @@ export default function GameBoard({
     canMoveDown: canMove.down,
     fallInterval,
     isRunning,
+    resetRotation,
+    nextBlock,
+    setNextBlock,
   });
 
   const startGame = useCallback(
@@ -130,9 +138,10 @@ export default function GameBoard({
       );
       setHookLocation(SPAWN_LOCATION);
       setActiveBlock(getRenderableBlock(renderableBlockList));
+      resetRotation();
       setNumRowsFilled(0);
     },
-    [isRunning, setIsRunning, setNumRowsFilled]
+    [isRunning, setIsRunning, setNumRowsFilled, resetRotation]
   );
 
   useEffect(() => {
@@ -149,7 +158,8 @@ export default function GameBoard({
 
   const renderableMatrix = renderSquares(
     staticBlocksMatrix,
-    blockVectors.current
+    blockVectors.current,
+    activeBlock.colorCode
   );
 
   return (

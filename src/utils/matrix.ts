@@ -1,4 +1,4 @@
-import { BinaryRow, BinaryMatrix } from "$types/typeCollection";
+import { ColorCodeRow, ColorCodeMatrix } from "$types/typeCollection";
 
 function createBinaryArray(length: number) {
   return Array(length).fill(0);
@@ -6,7 +6,7 @@ function createBinaryArray(length: number) {
 
 const createRow = createBinaryArray;
 
-function makeMatrixFromArray(array: BinaryRow, rowLength: number) {
+function makeMatrixFromArray(array: ColorCodeRow, rowLength: number) {
   return array.reduce(
     (acc, el, idx) => {
       if (idx % rowLength === 0 && idx) {
@@ -14,21 +14,25 @@ function makeMatrixFromArray(array: BinaryRow, rowLength: number) {
       }
 
       if (!acc.matrix[acc.currentRow]) {
-        acc.matrix[acc.currentRow] = [] as BinaryRow;
+        acc.matrix[acc.currentRow] = [] as ColorCodeRow;
       }
 
       acc.matrix[acc.currentRow].push(el);
 
       return acc;
     },
-    { currentRow: 0, matrix: [] as BinaryMatrix }
+    { currentRow: 0, matrix: [] as ColorCodeMatrix }
   ).matrix;
 }
 
-function createMatrix(width: number, height: number): BinaryMatrix {
+function createMatrix(width: number, height: number): ColorCodeMatrix {
   const binaryArray = createBinaryArray(width * height);
 
   return makeMatrixFromArray(binaryArray, width);
 }
 
-export { createMatrix, createRow };
+function copyMatrix(staticBlocksMatrix: ColorCodeMatrix) {
+  return [...staticBlocksMatrix.map((row) => [...row])] as ColorCodeMatrix;
+}
+
+export { createMatrix, createRow, copyMatrix };

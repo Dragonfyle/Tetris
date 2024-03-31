@@ -11,6 +11,7 @@ const BLOCK_DEFINITIONS = {
       [0, 0, 1, 0],
     ] as BlockDefinition,
     SPAWN_HOOK: [2, 2] as Vector,
+    COLOR_CODE: 1,
   },
   L: {
     SHAPE: [
@@ -19,6 +20,7 @@ const BLOCK_DEFINITIONS = {
       [0, 1, 1],
     ] as BlockDefinition,
     SPAWN_HOOK: [2, 1] as Vector,
+    COLOR_CODE: 2,
   },
   J: {
     SHAPE: [
@@ -27,6 +29,7 @@ const BLOCK_DEFINITIONS = {
       [1, 1, 0],
     ] as BlockDefinition,
     SPAWN_HOOK: [2, 1] as Vector,
+    COLOR_CODE: 3,
   },
   S: {
     SHAPE: [
@@ -35,6 +38,7 @@ const BLOCK_DEFINITIONS = {
       [1, 1, 0],
     ] as BlockDefinition,
     SPAWN_HOOK: [2, 1] as Vector,
+    COLOR_CODE: 4,
   },
   Z: {
     SHAPE: [
@@ -43,6 +47,7 @@ const BLOCK_DEFINITIONS = {
       [0, 1, 1],
     ] as BlockDefinition,
     SPAWN_HOOK: [2, 1] as Vector,
+    COLOR_CODE: 5,
   },
   T: {
     SHAPE: [
@@ -51,6 +56,7 @@ const BLOCK_DEFINITIONS = {
       [1, 1, 1],
     ] as BlockDefinition,
     SPAWN_HOOK: [2, 1] as Vector,
+    COLOR_CODE: 6,
   },
   O: {
     SHAPE: [
@@ -58,6 +64,7 @@ const BLOCK_DEFINITIONS = {
       [1, 1],
     ] as BlockDefinition,
     SPAWN_HOOK: [2, 1] as Vector,
+    COLOR_CODE: 7,
   },
 };
 
