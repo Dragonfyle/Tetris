@@ -15,6 +15,7 @@ const BLOCK_COLORS_MAP = {
   6: "rgba(85,0,233,1) 0%, rgba(222,0,250,1) 47%, rgba(204,40,167,1) 88%",
   7: "rgba(255,162,0,1) 0%, rgba(250,213,0,1) 47%, rgba(186,250,3,1) 88%",
 } as const;
+const DB_NUM_HIGH_SCORES = 10;
 
 export {
   INITIAL_INTERVAL,
@@ -23,4 +24,5 @@ export {
   ARROW_DOWN_SPEEDUP_FACTOR,
   MIN_INTERVAL,
   BLOCK_COLORS_MAP,
+  DB_NUM_HIGH_SCORES,
 };

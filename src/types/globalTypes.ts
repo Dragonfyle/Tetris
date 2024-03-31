@@ -13,6 +13,7 @@ type BlockVectors = Vector[];
 type MoveDirection = "down" | "left" | "right";
 type RotationDirection = "clockwise" | "counterclockwise";
 type RotationIdx = 0 | 1 | 2 | 3;
+type HighScores = { [key: number]: number };
 
 export type {
   ColorCodeRow,
@@ -26,4 +27,5 @@ export type {
   RotationIdx,
   PositionStatuses,
   BlockColorCode,
+  HighScores,
 };

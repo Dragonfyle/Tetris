@@ -14,6 +14,7 @@ interface GameBoardProps {
   setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
   nextBlock: RenderableBlockDefinition | undefined;
   setNextBlock: React.Dispatch<React.SetStateAction<RenderableBlockDefinition>>;
+  score: number;
 }
 
 type GetPositionStatus = (
