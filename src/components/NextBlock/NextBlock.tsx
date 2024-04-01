@@ -1,16 +1,20 @@
+import { selectBlock } from "$store/blockQueueSlice";
 import { BlockVectors } from "$types/typeCollection";
+import { INITIAL_ROTATION_IDX } from "$utils/block/block";
 import { createMatrix } from "$utils/matrix";
 import { renderSquares } from "$utils/renderSquares";
+import { useAppSelector } from "$utils/typedReduxHooks";
 import * as P from "./NextBlock.parts";
-import { NextBlockProps } from "./NextBlock.types";
 
 const WIDTH = 3;
 const HEIGHT = 4;
 
-export default function NextBlock({
-  nextBlockVectors,
-  colorCode,
-}: NextBlockProps) {
+export default function NextBlock() {
+  const {
+    nextBlock: { definition },
+  } = useAppSelector((state) => selectBlock(state));
+  const blockVectors = definition.rotations[INITIAL_ROTATION_IDX];
+  const colorCode = definition.colorCode;
   const emptyMatrix = createMatrix(WIDTH, HEIGHT);
 
   function normalizeVectors(blockVectors: BlockVectors) {
@@ -28,11 +32,7 @@ export default function NextBlock({
   return (
     <P.NextBlockWrapper>
       <P.NextBlock>
-        {renderSquares(
-          emptyMatrix,
-          normalizeVectors(nextBlockVectors),
-          colorCode
-        )}
+        {renderSquares(emptyMatrix, normalizeVectors(blockVectors), colorCode)}
       </P.NextBlock>
     </P.NextBlockWrapper>
   );

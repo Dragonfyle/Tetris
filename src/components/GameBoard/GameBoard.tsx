@@ -1,146 +1,86 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { BlockVectors } from "$types/typeCollection";
+import { useCallback, useEffect, useRef } from "react";
 import { GameBoardProps } from "./GameBoard.types";
-import { BOARD_DIMENSIONS } from "$config/board";
-import { INITIAL_INTERVAL, SPAWN_LOCATION } from "$config/initialSettings";
+import { useAppSelector, useAppDispatch } from "$utils/typedReduxHooks";
+import { selectIsRunning, run, endRun } from "$store/runningSlice";
+import { resetRowsFilled } from "$store/rowsFilledSlice";
 import useMovement from "$hooks/useMovement";
 import useFallingBlock from "$hooks/useFallingBlock";
 import useRotate from "$hooks/useRotate";
-import getRenderableBlock from "$utils/getRandomBlock";
-import { createMatrix } from "$utils/matrix";
 import { renderSquares } from "$utils/renderSquares";
-import {
-  calculateFallInterval,
-  getMovePossibilities,
-  isOnBoard,
-} from "./GameBoard.utils";
-import {
-  renderableBlockList,
-  translateBlockPosition,
-} from "$utils/block/block";
-import { handleBlockSettle } from "$utils/handleBlockSettle";
+import { getMovePossibilities } from "./GameBoard.utils";
+import { translateBlockPosition } from "$utils/block/block";
 import * as P from "./GameBoard.parts";
 import Modal from "$components/Modal/Modal";
 import { writeScoreToFirebase } from "$utils/firebaseReadWrite";
+import {
+  getNextBlock,
+  selectBlock,
+  resetHookLocation,
+} from "$store/blockQueueSlice";
+import { clearMatrix, selectMatrix } from "$store/matrixSlice";
+import { resetFallInterval } from "$store/fallIntervalSlice";
 
-export default function GameBoard({
-  numRowsFilled,
-  setNumRowsFilled,
-  isRunning,
-  setIsRunning,
-  nextBlock,
-  setNextBlock,
-  score,
-}: GameBoardProps) {
+export default function GameBoard({ score }: GameBoardProps) {
+  const { isRunning } = useAppSelector((state) => selectIsRunning(state));
+  const {
+    currentBlock: { definition, hookLocation, activeRotationIdx },
+  } = useAppSelector((state) => selectBlock(state));
+  const { staticMatrix } = useAppSelector((state) => selectMatrix(state));
+  const dispatch = useAppDispatch();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const isFirstGame = useRef(true);
-  const [staticBlocksMatrix, setStaticBlocksMatrix] = useState(
-    createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
-  );
-  const [activeBlock, setActiveBlock] = useState(nextBlock);
-  console.log(nextBlock.colorCode);
-  const [hookLocation, setHookLocation] = useState(SPAWN_LOCATION);
-  const { activeRotationIdx, resetRotation } = useRotate({
-    activeBlock,
-    staticBlocksMatrix,
-    hookLocation,
-  });
-  const blockVectors = useRef<BlockVectors>(
-    translateBlockPosition({
-      BlockVectors: activeBlock.rotations[activeRotationIdx],
-      offset: hookLocation,
-    })
-  );
-
-  blockVectors.current = translateBlockPosition({
-    BlockVectors: activeBlock.rotations[activeRotationIdx],
+  const blockVectors = translateBlockPosition({
+    blockVectors: definition.rotations[activeRotationIdx],
     offset: hookLocation,
+  });
+
+  useRotate({
+    definition,
+    staticMatrix,
+    hookLocation,
   });
 
   const canMove = getMovePossibilities(
     ["left", "right", "down"],
-    blockVectors.current,
-    staticBlocksMatrix
+    blockVectors,
+    staticMatrix
   );
 
-  const resetHookLocation = useCallback(
-    function resetHookLocation() {
-      setHookLocation(SPAWN_LOCATION);
-    },
-    [setHookLocation]
-  );
-
-  function handleEndFall(blockVectors: BlockVectors) {
-    const isGameOver = blockVectors.some(([y, x]) => !isOnBoard([y, x]));
-
-    return (fall: number, spawnBlock: () => void) => {
-      if (isGameOver) {
-        clearInterval(fall);
-        setIsRunning(false);
-        dialogRef.current?.showModal();
-        writeScoreToFirebase(score);
-      }
-      handleBlockSettle({
-        blockVectors: blockVectors,
-        staticBlocksMatrix,
-        setStaticBlocksMatrix,
-        setNumRowsFilled,
-        colorCode: activeBlock.colorCode,
-      });
-      spawnBlock();
-
-      resetHookLocation();
-    };
-  }
-
-  const endFallHandler = handleEndFall(blockVectors.current);
-
-  const speedupFactor = useMovement({
-    setHookLocation,
+  useMovement({
     canMoveLeft: canMove.left,
     canMoveRight: canMove.right,
-    isRunning,
   });
 
-  const fallInterval = calculateFallInterval(
-    INITIAL_INTERVAL,
-    speedupFactor,
-    numRowsFilled
-  );
+  function handleGameOver() {
+    dispatch(endRun());
+    dialogRef.current?.showModal();
+    writeScoreToFirebase(score);
+  }
 
   useFallingBlock({
-    endFallHandler,
-    setActiveBlock,
-    setHookLocation,
-    staticBlocksMatrix,
-    setStaticBlocksMatrix,
     canMoveDown: canMove.down,
-    fallInterval,
-    isRunning,
-    resetRotation,
-    nextBlock,
-    setNextBlock,
+    blockVectors,
+    onGameOver: handleGameOver,
   });
 
   const startGame = useCallback(
-    function startGame(e: KeyboardEvent) {
+    (e: KeyboardEvent) => {
       if (e.key !== " " || isRunning) return;
 
-      isFirstGame.current = false;
+      if (!isFirstGame.current) {
+        dispatch(resetRowsFilled());
+        dispatch(clearMatrix());
+        dispatch(resetHookLocation());
+        dispatch(resetFallInterval());
+      }
+
+      dispatch(getNextBlock());
       dialogRef?.current?.close();
-      setIsRunning(true);
+      dispatch(run());
 
-      if (isFirstGame.current) return;
-
-      setStaticBlocksMatrix(
-        createMatrix(BOARD_DIMENSIONS.WIDTH, BOARD_DIMENSIONS.HEIGHT)
-      );
-      setHookLocation(SPAWN_LOCATION);
-      setActiveBlock(getRenderableBlock(renderableBlockList));
-      resetRotation();
-      setNumRowsFilled(0);
+      isFirstGame.current = false;
     },
-    [isRunning, setIsRunning, setNumRowsFilled, resetRotation]
+    [isRunning, dispatch]
   );
 
   useEffect(() => {
@@ -156,9 +96,9 @@ export default function GameBoard({
   }, []);
 
   const renderableMatrix = renderSquares(
-    staticBlocksMatrix,
-    blockVectors.current,
-    activeBlock.colorCode
+    staticMatrix,
+    blockVectors,
+    definition.colorCode
   );
 
   return (

@@ -3,13 +3,15 @@ import { BlockColorCode, ColorCodeMatrix } from "$types/typeCollection.ts";
 import { copyMatrix, createRow } from "./matrix";
 import { isOnBoard, pruneRow } from "$components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "$config/board";
+import { Dispatch } from "@reduxjs/toolkit";
+import { incrementRowsFilled } from "$store/rowsFilledSlice";
+import { updateMatrix } from "$store/matrixSlice";
 
 interface HandleBlockSettle {
   blockVectors: BlockVectors;
-  staticBlocksMatrix: ColorCodeMatrix;
-  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<ColorCodeMatrix>>;
-  setNumRowsFilled: React.Dispatch<React.SetStateAction<number>>;
+  staticMatrix: ColorCodeMatrix;
   colorCode: BlockColorCode;
+  dispatch: Dispatch;
 }
 
 function solidifyBlock(
@@ -30,13 +32,12 @@ function solidifyBlock(
 
 function handleBlockSettle({
   blockVectors,
-  staticBlocksMatrix,
-  setStaticBlocksMatrix,
-  setNumRowsFilled,
+  staticMatrix,
   colorCode,
+  dispatch,
 }: HandleBlockSettle) {
   const newStaticMatrix = solidifyBlock(
-    staticBlocksMatrix,
+    staticMatrix,
     blockVectors,
     colorCode
   ).reduce((acc: ColorCodeMatrix, row: BlockColorCode[]) => {
@@ -45,14 +46,14 @@ function handleBlockSettle({
     if (currentRow) {
       acc.push(currentRow);
     } else {
-      setNumRowsFilled((prev) => prev + 1);
+      dispatch(incrementRowsFilled());
       acc.unshift(createRow(BOARD_DIMENSIONS.WIDTH));
     }
 
     return acc;
   }, []);
 
-  setStaticBlocksMatrix(newStaticMatrix);
+  dispatch(updateMatrix(newStaticMatrix));
 }
 
 export { handleBlockSettle };
