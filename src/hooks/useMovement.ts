@@ -1,26 +1,51 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { moveBlockByOne } from "$utils/block/block";
-import { Vector } from "$types/typeCollection";
 import {
   ARROW_DOWN_SPEEDUP_FACTOR,
   DEFAULT_SPEEDUP_FACTOR,
+  INITIAL_INTERVAL,
 } from "$config/initialSettings";
+import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
+import { selectBlock, updateHookLocation } from "$store/blockQueueSlice";
+import { selectIsRunning } from "$store/runningSlice";
+import { updateFallInterval } from "$store/fallIntervalSlice";
+import { calculateFallInterval } from "$components/GameBoard/GameBoard.utils";
+import { selectRowsFilled } from "$store/rowsFilledSlice";
 
 interface useMovementProps {
-  setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
   canMoveLeft: boolean;
   canMoveRight: boolean;
-  isRunning: boolean;
 }
 
 export default function useMovement({
-  setHookLocation,
   canMoveLeft,
   canMoveRight,
-  isRunning,
 }: useMovementProps) {
-  const [speedupFactor, setSpeedupFactor] = useState(DEFAULT_SPEEDUP_FACTOR);
+  const { isRunning } = useAppSelector((state) => selectIsRunning(state));
+  const dispatch = useAppDispatch();
+  const {
+    currentBlock: { hookLocation },
+  } = useAppSelector((state) => selectBlock(state));
+  const { numRowsFilled } = useAppSelector((state) => selectRowsFilled(state));
   const [isDown, setIsDown] = useState(false);
+  const arrowDownInterval = useMemo(
+    () =>
+      calculateFallInterval(
+        INITIAL_INTERVAL,
+        ARROW_DOWN_SPEEDUP_FACTOR,
+        numRowsFilled
+      ),
+    [numRowsFilled]
+  );
+  const normalInterval = useMemo(
+    () =>
+      calculateFallInterval(
+        INITIAL_INTERVAL,
+        DEFAULT_SPEEDUP_FACTOR,
+        numRowsFilled
+      ),
+    [numRowsFilled]
+  );
 
   const keyboardListener = useCallback(
     (e: KeyboardEvent) => {
@@ -33,13 +58,13 @@ export default function useMovement({
 
       function handleLeft() {
         if (canMoveLeft && e.type === "keydown") {
-          moveBlockByOne(setHookLocation, "left");
+          dispatch(updateHookLocation(moveBlockByOne(hookLocation, "left")));
         }
       }
 
       function handleRight() {
         if (canMoveRight && e.type === "keydown") {
-          moveBlockByOne(setHookLocation, "right");
+          dispatch(updateHookLocation(moveBlockByOne(hookLocation, "right")));
         }
       }
 
@@ -47,12 +72,12 @@ export default function useMovement({
         if (e.type === "keydown") {
           if (!isDown) {
             setIsDown(true);
-            setSpeedupFactor(ARROW_DOWN_SPEEDUP_FACTOR);
+            dispatch(updateFallInterval(arrowDownInterval));
           }
         }
         if (e.type === "keyup") {
           setIsDown(false);
-          setSpeedupFactor(DEFAULT_SPEEDUP_FACTOR);
+          dispatch(updateFallInterval(normalInterval));
         }
       }
 
@@ -73,7 +98,15 @@ export default function useMovement({
           break;
       }
     },
-    [setHookLocation, isDown, canMoveLeft, canMoveRight]
+    [
+      isDown,
+      canMoveLeft,
+      canMoveRight,
+      dispatch,
+      hookLocation,
+      arrowDownInterval,
+      normalInterval,
+    ]
   );
 
   useEffect(() => {
@@ -87,6 +120,4 @@ export default function useMovement({
       window.removeEventListener("keyup", keyboardListener);
     };
   }, [keyboardListener, isRunning]);
-
-  return speedupFactor;
 }

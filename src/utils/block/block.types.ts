@@ -28,14 +28,11 @@ type RenderableBlockList = MappedKeysAndValues<
 >;
 
 interface TranslateBlockPosition {
-  BlockVectors: BlockVectors;
+  blockVectors: BlockVectors;
   offset: Vector;
 }
 
-type MoveBlockByOne = (
-  callback: React.Dispatch<React.SetStateAction<Vector>>,
-  direction: MoveDirection
-) => void;
+type MoveBlockByOne = (hookLocation: Vector, direction: MoveDirection) => void;
 
 export type {
   BlockDefinition,
