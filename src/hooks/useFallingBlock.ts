@@ -1,80 +1,86 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import { moveBlockByOne } from "$utils/block/block";
+import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
 import {
-  ColorCodeMatrix,
-  Vector,
-  RenderableBlockDefinition,
-} from "$types/typeCollection";
-import getRenderableBlock from "$utils/getRandomBlock";
-import { moveBlockByOne, renderableBlockList } from "$utils/block/block";
+  getNextBlock,
+  resetHookLocation,
+  selectBlock,
+  updateHookLocation,
+} from "$store/blockQueueSlice";
+import { selectIsRunning } from "$store/runningSlice";
+import { selectFallInterval } from "$store/fallIntervalSlice";
+import { BlockVectors } from "$types/globalTypes";
+import { handleBlockSettle } from "$utils/handleBlockSettle";
+import { selectMatrix } from "$store/matrixSlice";
+import { isOnBoard } from "$components/GameBoard/GameBoard.utils";
 
 interface FallingBlockProps {
-  setActiveBlock: React.Dispatch<
-    React.SetStateAction<RenderableBlockDefinition>
-  >;
-  setHookLocation: React.Dispatch<React.SetStateAction<Vector>>;
-  staticBlocksMatrix: ColorCodeMatrix;
-  setStaticBlocksMatrix: React.Dispatch<React.SetStateAction<ColorCodeMatrix>>;
   canMoveDown: boolean;
-  fallInterval: number;
-  endFallHandler: (fall: number, spawnBlock: () => void) => void;
-  isRunning: boolean;
-  resetRotation: () => void;
-  nextBlock: RenderableBlockDefinition;
-  setNextBlock: React.Dispatch<React.SetStateAction<RenderableBlockDefinition>>;
+  blockVectors: BlockVectors;
+  onGameOver: () => void;
 }
 
 const MIN_INTERVAL = 0;
 
 export default function useFallingBlock({
-  setActiveBlock,
-  setHookLocation,
-  staticBlocksMatrix,
-  setStaticBlocksMatrix,
   canMoveDown,
-  fallInterval,
-  endFallHandler,
-  isRunning,
-  resetRotation,
-  nextBlock,
-  setNextBlock,
+  blockVectors,
+  onGameOver,
 }: FallingBlockProps) {
+  const { isRunning } = useAppSelector((state) => selectIsRunning(state));
+  const {
+    currentBlock: { hookLocation },
+  } = useAppSelector((state) => selectBlock(state));
+  const { fallInterval } = useAppSelector((state) => selectFallInterval(state));
+  const { staticMatrix } = useAppSelector((state) => selectMatrix(state));
+  const { currentBlock } = useAppSelector((state) => selectBlock(state));
+  const dispatch = useAppDispatch();
+
   const passedIntervalTime = useRef(0);
   const intervalStartTimestamp = useRef(0);
-  const fall = useRef<undefined | number>(undefined);
+  const fallRef = useRef<undefined | number>(undefined);
 
-  const spawnBlock = useCallback(() => {
-    setActiveBlock(nextBlock);
-    setNextBlock(getRenderableBlock(renderableBlockList));
-  }, [setActiveBlock, nextBlock, setNextBlock]);
+  const handleEndFall = useCallback(
+    (blockVectors: BlockVectors) => {
+      handleBlockSettle({
+        blockVectors,
+        staticMatrix,
+        colorCode: currentBlock.definition.colorCode,
+        dispatch,
+      });
+      dispatch(getNextBlock());
+      dispatch(resetHookLocation());
+    },
+    [dispatch, currentBlock.definition.colorCode, staticMatrix]
+  );
 
   const handleFall = useCallback(
     function handleFall() {
-      fall.current = window.setInterval(() => {
+      fallRef.current = window.setInterval(() => {
         intervalStartTimestamp.current = Date.now();
-        if (
-          !staticBlocksMatrix ||
-          typeof setStaticBlocksMatrix !== "function"
-        ) {
-          return;
-        }
 
         if (canMoveDown) {
-          moveBlockByOne(setHookLocation, "down");
+          dispatch(updateHookLocation(moveBlockByOne(hookLocation, "down")));
         } else {
-          resetRotation();
-          fall.current && endFallHandler(fall.current, spawnBlock);
+          const isGameOver = blockVectors.some(([y, x]) => !isOnBoard([y, x]));
+
+          if (isGameOver) {
+            onGameOver();
+            clearInterval(fallRef.current);
+          } else {
+            handleEndFall(blockVectors);
+          }
         }
       }, Math.max(MIN_INTERVAL, fallInterval - passedIntervalTime.current));
     },
     [
       canMoveDown,
-      setHookLocation,
-      setStaticBlocksMatrix,
-      spawnBlock,
-      staticBlocksMatrix,
       fallInterval,
-      endFallHandler,
-      resetRotation,
+      blockVectors,
+      handleEndFall,
+      dispatch,
+      hookLocation,
+      onGameOver,
     ]
   );
 
@@ -85,7 +91,7 @@ export default function useFallingBlock({
 
     return () => {
       passedIntervalTime.current = Date.now() - intervalStartTimestamp.current;
-      clearInterval(fall.current);
+      clearInterval(fallRef.current);
     };
-  }, [fall, fallInterval, handleFall, isRunning]);
+  }, [fallRef, fallInterval, handleFall, isRunning]);
 }

@@ -1,66 +1,59 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  INITIAL_ROTATION_IDX,
-  getNextRotation,
-  translateBlockPosition,
-} from "$utils/block/block";
+import { getNextRotation, translateBlockPosition } from "$utils/block/block";
 import { isRotationPossible } from "$components/GameBoard/GameBoard.utils";
 import {
   Vector,
   ColorCodeMatrix,
   RenderableBlockDefinition,
 } from "$types/typeCollection";
+import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
+import { selectBlock, setNextRotation } from "$store/blockQueueSlice";
 
 interface useRotateProps {
-  activeBlock: RenderableBlockDefinition;
-  staticBlocksMatrix: ColorCodeMatrix;
+  definition: RenderableBlockDefinition;
+  staticMatrix: ColorCodeMatrix;
   hookLocation: Vector;
 }
 
 export default function useRotate({
-  activeBlock,
-  staticBlocksMatrix,
+  definition,
+  staticMatrix,
   hookLocation,
 }: useRotateProps) {
+  const {
+    currentBlock: { activeRotationIdx },
+  } = useAppSelector((state) => selectBlock(state));
+  const dispatch = useAppDispatch();
   const [isDown, setIsDown] = useState(false);
-  const [activeRotationIdx, setActiveRotationIdx] =
-    useState(INITIAL_ROTATION_IDX);
 
   const nextRotationIdx = {
-    clockwise: getNextRotation("clockwise", activeRotationIdx),
-    counterclockwise: getNextRotation("counterclockwise", activeRotationIdx),
+    clockwise: getNextRotation(activeRotationIdx),
+    counterclockwise: getNextRotation(activeRotationIdx),
   };
 
   const nextRotations = {
-    clockwise: activeBlock.rotations[nextRotationIdx.clockwise],
-    counterclockwise: activeBlock.rotations[nextRotationIdx.counterclockwise],
+    clockwise: definition.rotations[nextRotationIdx.clockwise],
+    counterclockwise: definition.rotations[nextRotationIdx.counterclockwise],
   };
 
   const translatedRotations = {
     clockwise: translateBlockPosition({
-      BlockVectors: nextRotations.clockwise,
+      blockVectors: nextRotations.clockwise,
       offset: hookLocation,
     }),
     counterclockwise: translateBlockPosition({
-      BlockVectors: nextRotations.counterclockwise,
+      blockVectors: nextRotations.counterclockwise,
       offset: hookLocation,
     }),
   };
 
   const canRotate = {
-    clockwise: isRotationPossible(
-      translatedRotations.clockwise,
-      staticBlocksMatrix
-    ),
+    clockwise: isRotationPossible(translatedRotations.clockwise, staticMatrix),
     counterclockwise: isRotationPossible(
       translatedRotations.counterclockwise,
-      staticBlocksMatrix
+      staticMatrix
     ),
   };
-
-  const resetRotation = useCallback(() => {
-    setActiveRotationIdx(0);
-  }, []);
 
   const keyboardListener = useCallback(
     (e: KeyboardEvent) => {
@@ -73,7 +66,7 @@ export default function useRotate({
         if (!isDown) {
           setIsDown(true);
           if (canRotate.clockwise) {
-            setActiveRotationIdx(nextRotationIdx.clockwise);
+            dispatch(setNextRotation());
           }
         }
         if (e.type === "keyup") {
@@ -87,7 +80,7 @@ export default function useRotate({
         handleRotate();
       }
     },
-    [nextRotationIdx.clockwise, canRotate.clockwise, isDown]
+    [canRotate.clockwise, isDown, dispatch]
   );
 
   useEffect(() => {
@@ -99,6 +92,4 @@ export default function useRotate({
       window.removeEventListener("keyup", keyboardListener);
     };
   }, [keyboardListener]);
-
-  return { activeRotationIdx, resetRotation };
 }

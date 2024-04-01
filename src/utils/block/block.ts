@@ -1,5 +1,4 @@
 import {
-  RotationDirection,
   BlockVectors,
   Vector,
   TranslateBlockPosition,
@@ -23,11 +22,6 @@ const TRANSLATION_VECTORS = {
   down: [1, 0] as Vector,
 };
 
-const ROTATION_TO_IDX_MAP = {
-  clockwise: 1,
-  counterclockwise: -1,
-};
-
 const renderableBlockList = transformDefinitions(BLOCK_DEFINITIONS);
 
 function translateVector(vector: Vector, offset: Vector) {
@@ -37,23 +31,20 @@ function translateVector(vector: Vector, offset: Vector) {
 }
 
 function translateBlockPosition({
-  BlockVectors,
+  blockVectors,
   offset,
 }: TranslateBlockPosition): BlockVectors {
-  return BlockVectors.map((vector) => translateVector(vector, offset));
+  return blockVectors.map((vector) => translateVector(vector, offset));
 }
 
-const moveHookByOne: MoveBlockByOne = (setHookLocation, direction) => {
+const moveHookByOne: MoveBlockByOne = (hookLocation, direction) => {
   const offset = TRANSLATION_VECTORS[direction];
 
-  setHookLocation(([y, x]) => translateVector([y, x], offset));
+  return translateVector(hookLocation, offset);
 };
 
-function getNextRotation(
-  direction: RotationDirection,
-  currentRotationIndex: RotationIdx
-): RotationIdx {
-  const newIdx = ((currentRotationIndex + ROTATION_TO_IDX_MAP[direction]) %
+function getNextRotation(currentRotationIndex: RotationIdx): RotationIdx {
+  const newIdx = ((currentRotationIndex + 1) %
     ROTATIONS.NUM_ROTATIONS) as RotationIdx;
 
   if (newIdx > ROTATIONS.NUM_ROTATIONS - 1) {
