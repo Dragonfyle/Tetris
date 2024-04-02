@@ -7,6 +7,7 @@ import { selectRowsFilled } from "$store/rowsFilledSlice";
 import { useAppDispatch } from "$utils/typedReduxHooks";
 import { updateScores } from "$store/highScoresSlice";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import { getAuth, signInAnonymously, Auth } from "firebase/auth";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ function App() {
 
   const db = useRef(getFirestore());
 
-  useEffect(() => {
+  function keepScoresUpToDate() {
     const scoresRef = doc(db.current, "highScores", "top10");
     const unsub = onSnapshot(scoresRef, (doc) => {
       const unwrapped = doc.data();
@@ -26,6 +27,22 @@ function App() {
       const scoreValues: number[] = Object.values(unwrapped);
       dispatch(updateScores(scoreValues));
     });
+
+    return unsub;
+  }
+
+  async function signIn(auth: Auth) {
+    signInAnonymously(auth).catch((err) => {
+      const errCode = err.code;
+      const errMessage = err.message;
+      console.error(`error ${errCode}, ${errMessage}`);
+    });
+  }
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsub = keepScoresUpToDate();
+    signIn(auth);
 
     return () => unsub();
   }, []);
