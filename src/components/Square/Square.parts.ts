@@ -4,8 +4,8 @@ import { StyledSquareProps } from "./Square.types";
 
 export const Square = styled.div<StyledSquareProps>`
   position: relative;
-  width: 33px;
-  height: 33px;
+  width: 30px;
+  height: 30px;
   background: ${getBlockColor};
   border-radius: 6%;
   box-sizing: border-box;
