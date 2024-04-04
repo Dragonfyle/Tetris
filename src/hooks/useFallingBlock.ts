@@ -6,7 +6,7 @@ import {
   resetHookLocation,
   selectBlock,
   updateHookLocation,
-} from "$store/blockQueueSlice";
+} from "$store/blockSlice";
 import { selectIsRunning } from "$store/runningSlice";
 import { selectFallInterval } from "$store/fallIntervalSlice";
 import { BlockVectors } from "$types/globalTypes";

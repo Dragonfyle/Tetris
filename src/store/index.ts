@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import runningReducer from "./runningSlice";
 import rowsFilledReducer from "./rowsFilledSlice";
 import highScoresReducer from "./highScoresSlice";
-import blockQueueReducer from "./blockQueueSlice";
+import blockQueueReducer from "./blockSlice";
 import matrixReducer from "./matrixSlice";
 import fallIntervalReducer from "./fallIntervalSlice";
 import firebaseReducer from "./FirebaseSlice";
