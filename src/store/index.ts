@@ -5,6 +5,7 @@ import highScoresReducer from "./highScoresSlice";
 import blockQueueReducer from "./blockQueueSlice";
 import matrixReducer from "./matrixSlice";
 import fallIntervalReducer from "./fallIntervalSlice";
+import firebaseReducer from "./FirebaseSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     block: blockQueueReducer,
     matrix: matrixReducer,
     fallInterval: fallIntervalReducer,
+    firebase: firebaseReducer,
   },
 });
 
