@@ -38,6 +38,6 @@ export default function useLiveHighScores() {
     getScores(scoresRef.current);
     const unsub = keepScoresUpToDate(scoresRef.current);
 
-    return unsub();
+    return () => unsub();
   }, []);
 }
