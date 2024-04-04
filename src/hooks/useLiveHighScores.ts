@@ -28,7 +28,6 @@ export default function useLiveHighScores() {
       if (!unwrapped) return;
 
       const scoreValues: number[] = Object.values(unwrapped);
-      console.log(scoreValues);
       dispatch(updateScores(scoreValues));
     });
 
@@ -39,6 +38,6 @@ export default function useLiveHighScores() {
     getScores(scoresRef.current);
     const unsub = keepScoresUpToDate(scoresRef.current);
 
-    return unsub();
+    return () => unsub();
   }, []);
 }
