@@ -1,8 +1,10 @@
+import useLiveHighScores from "$hooks/useLiveHighScores";
 import { selectHighScores } from "$store/highScoresSlice";
 import { useAppSelector } from "$utils/typedReduxHooks";
 import * as P from "./HighScores.parts";
 
 export default function HighScores() {
+  useLiveHighScores();
   const { highScores } = useAppSelector((state) => selectHighScores(state));
 
   function renderHighScores(highScores: number[]) {

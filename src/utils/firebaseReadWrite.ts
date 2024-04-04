@@ -7,23 +7,24 @@ import {
   setDoc,
   getDoc,
   DocumentData,
+  DocumentReference,
 } from "firebase/firestore";
 
 initializeApp(firebaseConfig);
 const db = getFirestore();
-const highScoresRef = doc(db, "highScores", "top10");
+const scoresRef = doc(db, "highScores", "top10");
 
 export async function writeScoreToFirebase(score: number) {
-  const currentHighScores = await readScoresFromFirebase();
+  const currentHighScores = await readScoresFromFirebase(scoresRef);
 
   if (!isHigh(score, currentHighScores)) return;
 
   const newRanking = getNewRanking(score, currentHighScores);
-  setDoc(highScoresRef, newRanking, { merge: true });
+  setDoc(scoresRef, newRanking, { merge: true });
 }
 
-export async function readScoresFromFirebase() {
-  const docSnap = await getDoc(highScoresRef);
+export async function readScoresFromFirebase(scoresRef: DocumentReference) {
+  const docSnap = await getDoc(scoresRef);
 
   if (docSnap.exists()) {
     return docSnap.data();
