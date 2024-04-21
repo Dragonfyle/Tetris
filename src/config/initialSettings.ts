@@ -3,8 +3,8 @@ import { Vector } from "$types/typeCollection";
 const INITIAL_INTERVAL = 300;
 const SPAWN_LOCATION = [-3, 4] as Vector;
 const DEFAULT_SPEEDUP_FACTOR = 1;
-const ARROW_DOWN_SPEEDUP_FACTOR = 4;
-const MIN_INTERVAL = 40;
+const ARROW_DOWN_SPEEDUP_FACTOR = 6;
+const MIN_INTERVAL = 30;
 const BLOCK_COLORS_MAP = {
   0: "none",
   1: "rgba(255,0,0,1) 0%, rgba(250,142,0,1) 47%, rgba(227,152,0,1) 88%",
