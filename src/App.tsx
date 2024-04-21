@@ -6,8 +6,10 @@ import { selectRowsFilled } from "$store/rowsFilledSlice";
 import useFirebaseSignIn from "$hooks/useFirebaseSignIn";
 
 function App() {
-  const { numRowsFilled } = useAppSelector((state) => selectRowsFilled(state));
-  const score = calculateScore(numRowsFilled);
+  const { numRowsFilled, num4rows } = useAppSelector((state) =>
+    selectRowsFilled(state)
+  );
+  const score = calculateScore(numRowsFilled, num4rows);
 
   useFirebaseSignIn();
 
