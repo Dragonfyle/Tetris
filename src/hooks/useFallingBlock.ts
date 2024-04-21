@@ -4,9 +4,10 @@ import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
 import {
   getNextBlock,
   resetHookLocation,
+  resetRotation,
   selectBlock,
   updateHookLocation,
-} from "$store/blockQueueSlice";
+} from "$store/blockSlice";
 import { selectIsRunning } from "$store/runningSlice";
 import { selectFallInterval } from "$store/fallIntervalSlice";
 import { BlockVectors } from "$types/globalTypes";
@@ -48,8 +49,9 @@ export default function useFallingBlock({
         colorCode: currentBlock.definition.colorCode,
         dispatch,
       });
-      dispatch(getNextBlock());
+      dispatch(resetRotation());
       dispatch(resetHookLocation());
+      dispatch(getNextBlock());
     },
     [dispatch, currentBlock.definition.colorCode, staticMatrix]
   );

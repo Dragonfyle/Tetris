@@ -44,6 +44,12 @@ const blockSlice = createSlice({
     updateHookLocation(state, action) {
       state.currentBlock.hookLocation = action.payload;
     },
+    moveHookRight(state) {
+      state.currentBlock.hookLocation[1]++;
+    },
+    moveHookLeft(state) {
+      state.currentBlock.hookLocation[1]--;
+    },
     resetHookLocation(state) {
       state.currentBlock.hookLocation = SPAWN_LOCATION;
     },

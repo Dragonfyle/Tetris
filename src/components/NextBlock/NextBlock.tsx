@@ -1,4 +1,4 @@
-import { selectBlock } from "$store/blockQueueSlice";
+import { selectBlock } from "$store/blockSlice";
 import { BlockVectors } from "$types/typeCollection";
 import { INITIAL_ROTATION_IDX } from "$utils/block/block";
 import { createMatrix } from "$utils/matrix";

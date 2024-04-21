@@ -16,7 +16,7 @@ import {
   getNextBlock,
   selectBlock,
   resetHookLocation,
-} from "$store/blockQueueSlice";
+} from "$store/blockSlice";
 import { clearMatrix, selectMatrix } from "$store/matrixSlice";
 import { resetFallInterval } from "$store/fallIntervalSlice";
 
@@ -37,7 +37,6 @@ export default function GameBoard({ score }: GameBoardProps) {
   useRotate({
     definition,
     staticMatrix,
-    hookLocation,
   });
 
   const canMove = getMovePossibilities(
@@ -82,7 +81,6 @@ export default function GameBoard({ score }: GameBoardProps) {
     },
     [isRunning, dispatch]
   );
-
   useEffect(() => {
     if (isRunning) return;
 

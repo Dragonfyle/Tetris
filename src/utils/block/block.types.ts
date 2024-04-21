@@ -20,6 +20,7 @@ type RenderableBlockDefinition = {
   rotations: RotationsList;
   spawnHook: Vector;
   colorCode: BlockColorCode;
+  rotates: boolean;
 };
 
 type RenderableBlockList = MappedKeysAndValues<
