@@ -29,10 +29,10 @@ export default function useRotate({
   const dispatch = useAppDispatch();
   const [isDown, setIsDown] = useState(false);
 
-  const nextRotationIdx = getNextRotation(activeRotationIdx);
-
+  const nextRotationIdx = definition.rotates
+    ? getNextRotation(activeRotationIdx)
+    : activeRotationIdx;
   const nextRotation = definition.rotations[nextRotationIdx];
-
   const translatedRotation = translateBlockPosition({
     blockVectors: nextRotation,
     offset: hookLocation,
@@ -99,6 +99,8 @@ export default function useRotate({
   );
 
   useEffect(() => {
+    if (!definition.rotates) return;
+
     window.addEventListener("keydown", keyboardListener);
     window.addEventListener("keyup", keyboardListener);
 
