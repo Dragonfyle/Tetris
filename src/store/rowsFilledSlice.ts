@@ -3,9 +3,10 @@ import { RootState } from ".";
 
 interface InitialState {
   numRowsFilled: number;
+  num4rows: number;
 }
 
-const initialState: InitialState = { numRowsFilled: 0 };
+const initialState: InitialState = { numRowsFilled: 0, num4rows: 0 };
 
 const rowsFilledSlice = createSlice({
   name: "numRowsFilled",
@@ -13,6 +14,9 @@ const rowsFilledSlice = createSlice({
   reducers: {
     incrementRowsFilled(state) {
       state.numRowsFilled++;
+    },
+    increment4rowsCount(state) {
+      state.num4rows++;
     },
     resetRowsFilled(state) {
       state.numRowsFilled = 0;
@@ -23,4 +27,5 @@ const rowsFilledSlice = createSlice({
 export default rowsFilledSlice.reducer;
 
 export const selectRowsFilled = (state: RootState) => state.numRowsFilled;
-export const { incrementRowsFilled, resetRowsFilled } = rowsFilledSlice.actions;
+export const { incrementRowsFilled, increment4rowsCount, resetRowsFilled } =
+  rowsFilledSlice.actions;

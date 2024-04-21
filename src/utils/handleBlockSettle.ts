@@ -4,7 +4,10 @@ import { copyMatrix, createRow } from "./matrix";
 import { isOnBoard, pruneRow } from "$components/GameBoard/GameBoard.utils";
 import { BOARD_DIMENSIONS } from "$config/board";
 import { Dispatch } from "@reduxjs/toolkit";
-import { incrementRowsFilled } from "$store/rowsFilledSlice";
+import {
+  incrementRowsFilled,
+  increment4rowsCount,
+} from "$store/rowsFilledSlice";
 import { updateMatrix } from "$store/matrixSlice";
 
 interface HandleBlockSettle {
@@ -12,6 +15,11 @@ interface HandleBlockSettle {
   staticMatrix: ColorCodeMatrix;
   colorCode: BlockColorCode;
   dispatch: Dispatch;
+}
+
+interface Accumulator {
+  newStaticMatrix: ColorCodeMatrix;
+  rowsCleared: 0 | 1 | 2 | 3 | 4;
 }
 
 function solidifyBlock(
@@ -36,23 +44,30 @@ function handleBlockSettle({
   colorCode,
   dispatch,
 }: HandleBlockSettle) {
-  const newStaticMatrix = solidifyBlock(
+  const { newStaticMatrix, rowsCleared } = solidifyBlock(
     staticMatrix,
     blockVectors,
     colorCode
-  ).reduce((acc: ColorCodeMatrix, row: BlockColorCode[]) => {
-    const currentRow = pruneRow(row);
+  ).reduce(
+    (acc: Accumulator, row: BlockColorCode[]) => {
+      const currentRow = pruneRow(row);
 
-    if (currentRow) {
-      acc.push(currentRow);
-    } else {
-      dispatch(incrementRowsFilled());
-      acc.unshift(createRow(BOARD_DIMENSIONS.WIDTH));
-    }
+      if (currentRow) {
+        acc.newStaticMatrix.push(currentRow);
+      } else {
+        acc.rowsCleared += 1;
+        dispatch(incrementRowsFilled());
+        acc.newStaticMatrix.unshift(createRow(BOARD_DIMENSIONS.WIDTH));
+      }
 
-    return acc;
-  }, []);
+      return acc;
+    },
+    { newStaticMatrix: [], rowsCleared: 0 }
+  );
 
+  if (rowsCleared === 4) {
+    dispatch(increment4rowsCount());
+  }
   dispatch(updateMatrix(newStaticMatrix));
 }
 
