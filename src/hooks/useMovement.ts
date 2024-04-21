@@ -6,7 +6,7 @@ import {
   INITIAL_INTERVAL,
 } from "$config/initialSettings";
 import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
-import { selectBlock, updateHookLocation } from "$store/blockQueueSlice";
+import { selectBlock, updateHookLocation } from "$store/blockSlice";
 import { selectIsRunning } from "$store/runningSlice";
 import { updateFallInterval } from "$store/fallIntervalSlice";
 import { calculateFallInterval } from "$components/GameBoard/GameBoard.utils";
