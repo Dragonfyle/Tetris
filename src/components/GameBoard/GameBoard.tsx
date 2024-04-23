@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { GameBoardProps } from "./GameBoard.types";
 import { useAppSelector, useAppDispatch } from "$utils/typedReduxHooks";
 import { selectIsRunning, run, endRun } from "$store/runningSlice";
-import { resetRowsFilled } from "$store/rowsFilledSlice";
+import { reset4rowsCount, resetRowsFilled } from "$store/rowsFilledSlice";
 import useMovement from "$hooks/useMovement";
 import useFallingBlock from "$hooks/useFallingBlock";
 import useRotate from "$hooks/useRotate";
@@ -68,6 +68,7 @@ export default function GameBoard({ score }: GameBoardProps) {
 
       if (!isFirstGame.current) {
         dispatch(resetRowsFilled());
+        dispatch(reset4rowsCount());
         dispatch(clearMatrix());
         dispatch(resetHookLocation());
         dispatch(resetFallInterval());

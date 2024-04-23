@@ -21,11 +21,18 @@ const rowsFilledSlice = createSlice({
     resetRowsFilled(state) {
       state.numRowsFilled = 0;
     },
+    reset4rowsCount(state) {
+      state.num4rows = 0;
+    },
   },
 });
 
 export default rowsFilledSlice.reducer;
 
 export const selectRowsFilled = (state: RootState) => state.numRowsFilled;
-export const { incrementRowsFilled, increment4rowsCount, resetRowsFilled } =
-  rowsFilledSlice.actions;
+export const {
+  incrementRowsFilled,
+  increment4rowsCount,
+  resetRowsFilled,
+  reset4rowsCount,
+} = rowsFilledSlice.actions;
