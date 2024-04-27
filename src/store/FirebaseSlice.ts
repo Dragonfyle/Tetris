@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from ".";
+import { RootState } from "./store";
 import { UserCredential } from "@firebase/auth";
 
 interface InitialState {

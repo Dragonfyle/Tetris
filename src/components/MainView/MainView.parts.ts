@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
-export const Canvas = styled.div`
+export const View = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #282828;

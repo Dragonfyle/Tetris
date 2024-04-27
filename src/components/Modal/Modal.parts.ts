@@ -10,7 +10,7 @@ export const StyledDialog = styled.dialog`
   outline: 0;
   border-radius: 5px;
   background-color: lightblue;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -120%);
   span:first-child {
     display: flex;
     justify-content: center;

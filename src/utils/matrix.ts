@@ -1,10 +1,8 @@
 import { ColorCodeRow, ColorCodeMatrix } from "$types/typeCollection";
 
-function createBinaryArray(length: number) {
+function createRow(length: number) {
   return Array(length).fill(0);
 }
-
-const createRow = createBinaryArray;
 
 function makeMatrixFromArray(array: ColorCodeRow, rowLength: number) {
   return array.reduce(
@@ -26,7 +24,7 @@ function makeMatrixFromArray(array: ColorCodeRow, rowLength: number) {
 }
 
 function createMatrix(width: number, height: number): ColorCodeMatrix {
-  const binaryArray = createBinaryArray(width * height);
+  const binaryArray = createRow(width * height);
 
   return makeMatrixFromArray(binaryArray, width);
 }

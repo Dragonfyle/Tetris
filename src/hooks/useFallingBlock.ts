@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { moveBlockByOne } from "$utils/block/block";
-import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
+import { useAppDispatch } from "./useAppDispatch";
+import { useAppSelector } from "./useAppSelector";
 import {
   getNextBlock,
   resetHookLocation,
@@ -28,13 +29,13 @@ export default function useFallingBlock({
   blockVectors,
   onGameOver,
 }: FallingBlockProps) {
-  const { isRunning } = useAppSelector((state) => selectIsRunning(state));
+  const { isRunning } = useAppSelector(selectIsRunning);
   const {
     currentBlock: { hookLocation },
-  } = useAppSelector((state) => selectBlock(state));
-  const { fallInterval } = useAppSelector((state) => selectFallInterval(state));
-  const { staticMatrix } = useAppSelector((state) => selectMatrix(state));
-  const { currentBlock } = useAppSelector((state) => selectBlock(state));
+  } = useAppSelector(selectBlock);
+  const { fallInterval } = useAppSelector(selectFallInterval);
+  const { staticMatrix } = useAppSelector(selectMatrix);
+  const { currentBlock } = useAppSelector(selectBlock);
   const dispatch = useAppDispatch();
 
   const passedIntervalTime = useRef(0);

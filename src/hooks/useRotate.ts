@@ -6,13 +6,15 @@ import {
   RenderableBlockDefinition,
   BlockVectors,
 } from "$types/typeCollection";
-import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
+import { useAppDispatch } from "./useAppDispatch";
+import { useAppSelector } from "./useAppSelector";
 import {
   selectBlock,
   setNextRotation,
   updateHookLocation,
 } from "$store/blockSlice";
 import { BOARD_EDGE } from "$config/board";
+import { SPACEBAR } from "src/constants/constants";
 
 interface useRotateProps {
   definition: RenderableBlockDefinition;
@@ -25,7 +27,7 @@ export default function useRotate({
 }: useRotateProps) {
   const {
     currentBlock: { activeRotationIdx, hookLocation },
-  } = useAppSelector((state) => selectBlock(state));
+  } = useAppSelector(selectBlock);
   const dispatch = useAppDispatch();
   const [isDown, setIsDown] = useState(false);
 
@@ -65,7 +67,7 @@ export default function useRotate({
   const keyboardListener = useCallback(
     (e: KeyboardEvent) => {
       const supportedKeys = {
-        SPACE: " ",
+        SPACE: SPACEBAR,
       };
       const isKeySupported = Object.values(supportedKeys).includes(e.key);
 
