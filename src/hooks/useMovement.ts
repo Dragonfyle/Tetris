@@ -5,12 +5,14 @@ import {
   DEFAULT_SPEEDUP_FACTOR,
   INITIAL_INTERVAL,
 } from "$config/initialSettings";
-import { useAppDispatch, useAppSelector } from "$utils/typedReduxHooks";
+import { useAppDispatch } from "./useAppDispatch";
+import { useAppSelector } from "./useAppSelector";
 import { selectBlock, updateHookLocation } from "$store/blockSlice";
 import { selectIsRunning } from "$store/runningSlice";
 import { updateFallInterval } from "$store/fallIntervalSlice";
 import { calculateFallInterval } from "$components/GameBoard/GameBoard.utils";
 import { selectRowsFilled } from "$store/rowsFilledSlice";
+import { ARROW_KEYS } from "src/constants/constants";
 
 interface useMovementProps {
   canMoveLeft: boolean;
@@ -21,12 +23,12 @@ export default function useMovement({
   canMoveLeft,
   canMoveRight,
 }: useMovementProps) {
-  const { isRunning } = useAppSelector((state) => selectIsRunning(state));
-  const dispatch = useAppDispatch();
+  const { isRunning } = useAppSelector(selectIsRunning);
   const {
     currentBlock: { hookLocation },
-  } = useAppSelector((state) => selectBlock(state));
-  const { numRowsFilled } = useAppSelector((state) => selectRowsFilled(state));
+  } = useAppSelector(selectBlock);
+  const { numRowsFilled } = useAppSelector(selectRowsFilled);
+  const dispatch = useAppDispatch();
   const [isDown, setIsDown] = useState(false);
   const arrowDownInterval = useMemo(
     () =>
@@ -49,12 +51,7 @@ export default function useMovement({
 
   const keyboardListener = useCallback(
     (e: KeyboardEvent) => {
-      const supportedKeys = {
-        ARROW_DOWN: "ArrowDown",
-        ARROW_LEFT: "ArrowLeft",
-        ARROW_RIGHT: "ArrowRight",
-      };
-      const isKeySupported = Object.values(supportedKeys).includes(e.key);
+      const isKeySupported = e.key in ARROW_KEYS;
 
       function handleLeft() {
         if (canMoveLeft && e.type === "keydown") {
@@ -87,13 +84,13 @@ export default function useMovement({
       }
 
       switch (e.key) {
-        case supportedKeys.ARROW_LEFT:
+        case ARROW_KEYS.ARROW_LEFT:
           handleLeft();
           break;
-        case supportedKeys.ARROW_RIGHT:
+        case ARROW_KEYS.ARROW_RIGHT:
           handleRight();
           break;
-        case supportedKeys.ARROW_DOWN:
+        case ARROW_KEYS.ARROW_DOWN:
           handleDown();
           break;
       }
@@ -121,3 +118,5 @@ export default function useMovement({
     };
   }, [keyboardListener, isRunning]);
 }
+
+//TODO prettier

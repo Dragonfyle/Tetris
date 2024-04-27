@@ -1,5 +1,5 @@
 import { storeUserID } from "$store/FirebaseSlice";
-import { useAppDispatch } from "$utils/typedReduxHooks";
+import { useAppDispatch } from "./useAppDispatch";
 import {
   Auth,
   getAuth,

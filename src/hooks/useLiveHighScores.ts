@@ -1,6 +1,6 @@
 import { updateScores } from "$store/highScoresSlice";
 import { readScoresFromFirebase } from "$utils/firebaseReadWrite";
-import { useAppDispatch } from "$utils/typedReduxHooks";
+import { useAppDispatch } from "./useAppDispatch";
 import {
   DocumentReference,
   doc,

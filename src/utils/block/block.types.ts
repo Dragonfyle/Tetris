@@ -1,6 +1,4 @@
-import { BLOCK_DEFINITIONS } from "$data/blockData";
 import {
-  KeyOfType,
   BlockVectors,
   Vector,
   MappedKeysAndValues,
@@ -8,11 +6,18 @@ import {
   BlockColorCode,
 } from "$types/typeCollection";
 
-type BlockDefinition = (0 | 1)[][];
+type BlockDefinitionShape = (0 | 1)[][];
 
-type BlockDefinitions = typeof BLOCK_DEFINITIONS;
+type BlockName = "I" | "L" | "J" | "S" | "Z" | "T" | "O";
 
-type BlockName = KeyOfType<BlockDefinitions>;
+type BlockDefinitions = {
+  [key in BlockName]: {
+    SHAPE: BlockDefinitionShape;
+    SPAWN_HOOK: Vector;
+    COLOR_CODE: BlockColorCode;
+    ROTATES: boolean;
+  };
+};
 
 type RotationsList = BlockVectors[];
 
@@ -36,7 +41,7 @@ interface TranslateBlockPosition {
 type MoveBlockByOne = (hookLocation: Vector, direction: MoveDirection) => void;
 
 export type {
-  BlockDefinition,
+  BlockDefinitionShape as BlockDefinition,
   BlockName,
   RenderableBlockList,
   RenderableBlockDefinition,

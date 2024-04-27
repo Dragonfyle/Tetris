@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from ".";
+import { RootState } from "./store";
 import { ColorCodeMatrix } from "$types/globalTypes";
 import { createMatrix } from "$utils/matrix";
 import { BOARD_DIMENSIONS } from "$config/board";

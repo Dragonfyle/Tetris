@@ -16,6 +16,9 @@ const BLOCK_COLORS_MAP = {
   7: "rgba(255,162,0,1) 0%, rgba(250,213,0,1) 47%, rgba(186,250,3,1) 88%",
 } as const;
 const DB_NUM_HIGH_SCORES = 10;
+const MOBILE_WIDTH = 1024;
+const SINGLE_ROW_SCORE = 100;
+const TETRIS_ADD_SCORE = 400;
 
 export {
   INITIAL_INTERVAL,
@@ -25,4 +28,7 @@ export {
   MIN_INTERVAL,
   BLOCK_COLORS_MAP,
   DB_NUM_HIGH_SCORES,
+  MOBILE_WIDTH,
+  SINGLE_ROW_SCORE,
+  TETRIS_ADD_SCORE,
 };

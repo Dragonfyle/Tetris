@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { GameBoardProps } from "./GameBoard.types";
-import { useAppSelector, useAppDispatch } from "$utils/typedReduxHooks";
+import { useAppSelector } from "$hooks/useAppSelector";
+import { useAppDispatch } from "$hooks/useAppDispatch";
 import { selectIsRunning, run, endRun } from "$store/runningSlice";
 import { reset4rowsCount, resetRowsFilled } from "$store/rowsFilledSlice";
 import useMovement from "$hooks/useMovement";
@@ -9,7 +10,6 @@ import useRotate from "$hooks/useRotate";
 import { renderSquares } from "$utils/renderSquares";
 import { getMovePossibilities } from "./GameBoard.utils";
 import { translateBlockPosition } from "$utils/block/block";
-import * as P from "./GameBoard.parts";
 import Modal from "$components/Modal/Modal";
 import { writeScoreToFirebase } from "$utils/firebaseReadWrite";
 import {
@@ -19,6 +19,8 @@ import {
 } from "$store/blockSlice";
 import { clearMatrix, selectMatrix } from "$store/matrixSlice";
 import { resetFallInterval } from "$store/fallIntervalSlice";
+import { SPACEBAR } from "src/constants/constants";
+import * as P from "./GameBoard.parts";
 
 export default function GameBoard({ score }: GameBoardProps) {
   const { isRunning } = useAppSelector((state) => selectIsRunning(state));
@@ -64,7 +66,7 @@ export default function GameBoard({ score }: GameBoardProps) {
 
   const startGame = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key !== " " || isRunning) return;
+      if (e.key !== SPACEBAR || isRunning) return;
 
       if (!isFirstGame.current) {
         dispatch(resetRowsFilled());

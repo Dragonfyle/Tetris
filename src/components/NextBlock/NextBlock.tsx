@@ -3,7 +3,7 @@ import { BlockVectors } from "$types/typeCollection";
 import { INITIAL_ROTATION_IDX } from "$utils/block/block";
 import { createMatrix } from "$utils/matrix";
 import { renderSquares } from "$utils/renderSquares";
-import { useAppSelector } from "$utils/typedReduxHooks";
+import { useAppSelector } from "$hooks/useAppSelector";
 import * as P from "./NextBlock.parts";
 
 const WIDTH = 3;

@@ -1,17 +1,19 @@
-import * as P from "./MainCanvas.parts";
+import * as P from "./MainView.parts";
 import GameBoard from "$components/GameBoard/GameBoard";
 import LeftUI from "$components/LeftUI/LeftUI";
 import RightUI from "$components/RightUI/RightUI";
-import { MainCanvasProps } from "./MainCanvas.types";
+import { MainViewProps } from "./MainView.types";
+import Controls from "$components/Controls/Controls";
 
-export default function MainCanvas({ score }: MainCanvasProps) {
+export default function MainView({ score }: MainViewProps) {
   return (
-    <P.Canvas>
+    <P.View>
       <P.ContentWrapper>
         <LeftUI score={score} />
         <GameBoard score={score} />
         <RightUI />
       </P.ContentWrapper>
-    </P.Canvas>
+      <Controls />
+    </P.View>
   );
 }
