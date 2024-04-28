@@ -6,6 +6,7 @@ export const MobileScreen = styled.main`
   justify-content: center;
   height: 100%;
   width: 100%;
+  padding: 10px 20px;
   background-color: blueviolet;
   font-size: 12px;
 `;
